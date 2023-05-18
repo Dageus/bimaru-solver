@@ -14,6 +14,11 @@ BOTTOM  = "B"
 LEFT    = "L"
 RIGHT   = "R"
 
+#          1x1  2x1  3x1  4x1
+PIECES = [  4 ,  3 ,  2 ,  1  ]
+
+global ROWS, COLUMNS
+
 import sys
 from sys import stdin
 import numpy as np
@@ -47,14 +52,11 @@ class Board:
     
     """Representação interna de um tabuleiro de Bimaru.""" 
     
-    def __init__(self, matrix, rows, columns, pieces):
+    def __init__(self, matrix):
         """Construtor da classe. Recebe como argumentos uma matriz que representa
         o tabuleiro, uma lista com os espaços preenchidos nas linhas, uma lista
         com os espaços preenchidos nas colunas e uma lista com o número de peças"""
         self.matrix = matrix
-        self.rows = rows
-        self.columns = columns
-        self.pieces = pieces
 
     def get_value(self, row: int, col: int) -> str:
         """Devolve o valor na respetiva posição do tabuleiro."""
@@ -83,6 +85,7 @@ class Board:
         if self.matrix[row][col+1] == "." or self.matrix[row][col+1] == "W" or col + 1 > 9:
             cell2 = None
         return cell1, cell2
+    
     def __str__(self):
         """Devolve uma string que representa o tabuleiro."""
         str = ""
@@ -92,6 +95,10 @@ class Board:
                 str += col
             str += "\n"
         return str
+    
+    def print(self):
+        """Imprime o tabuleiro."""
+        return self.__str__()
 
     @staticmethod
     def parse_instance():
@@ -101,17 +108,15 @@ class Board:
         
         matrix = np.full((10, 10), ".")
         
-        pieces = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
+        ROWS = stdin.readline()
+        ROWS = ROWS.rstrip().split(" ")
+        ROWS.pop(0)
+        ROWS = [int(i) for i in ROWS]
         
-        rows = stdin.readline()
-        rows = rows.rstrip().split(" ")
-        rows.pop(0)
-        rows = [int(i) for i in rows]
-        
-        columns = stdin.readline()
-        columns = columns.rstrip().split(" ")
-        columns.pop(0)
-        columns = [int(i) for i in columns]
+        COLUMNS = stdin.readline()
+        COLUMNS = COLUMNS.rstrip().split(" ")
+        COLUMNS.pop(0)
+        COLUMNS = [int(i) for i in COLUMNS]
         
         num_hints = int(stdin.readline())
         
@@ -122,7 +127,7 @@ class Board:
             hint = [int(hint[0]), int(hint[1]), hint[2]]
             matrix[hint[0]][hint[1]] = hint[2]
         
-        return Board(matrix, rows, columns, pieces)
+        return Board(matrix)
 
     # TODO: outros metodos da classe
 
@@ -164,7 +169,23 @@ class Bimaru(Problem):
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas de acordo com as regras do problema."""
         # TODO
-        pass
+        for row in range(10):
+            for col in range(10):
+                if state.board.get_value(row, col) == CIRCLE:
+                    ROWS[row] -= 1
+                    COLUMNS[col] -= 1
+                # elif TOP
+                
+                # elif BOTTOM
+                #
+                # etc.
+                #
+                #
+                #
+                #
+                #
+                    
+                
 
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
