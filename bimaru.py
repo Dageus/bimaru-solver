@@ -17,6 +17,27 @@ RIGHT   = "R"
 #          1x1  2x1  3x1  4x1
 PIECES = [  4 ,  3 ,  2 ,  1  ]
 
+
+"""
+Sets:
+
+Note the following data:
+• Gridsl consists of the grids in which one ship of
+length l is located and is a subset of the overall set
+gridsall.
+• Gridsall consists of all grids in which one ship is
+located where each grid is numbered.
+It is the union of the grids in gridsl (i.e., U(l) grids(l)). 
+A particular grid is denoted by g, 
+where g ∈ {1,...,N}; N denotes the last grid.
+"""
+
+"""
+
+Basear projeto no ship based model, aka reformular isto tudo
+
+"""
+
 global ROWS, COLUMNS
 
 import sys
@@ -168,22 +189,7 @@ class Bimaru(Problem):
         """Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas de acordo com as regras do problema."""
-        # TODO
-        for row in range(10):
-            for col in range(10):
-                if state.board.get_value(row, col) == CIRCLE:
-                    ROWS[row] -= 1
-                    COLUMNS[col] -= 1
-                # elif TOP
-                
-                # elif BOTTOM
-                #
-                # etc.
-                #
-                #
-                #
-                #
-                #
+        #TODO
                     
                 
 
