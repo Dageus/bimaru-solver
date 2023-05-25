@@ -95,6 +95,8 @@ class Board:
         if self.matrix[row+1][col] == "." or self.matrix[row+1][col] == "W" or row + 1 > 9:
             cell2 = None
         return cell1, cell2
+    
+    #TODO adjacent values parra ate 4 para verificar se 2 hints formam o mm barco
 
     def adjacent_horizontal_values(self, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente à esquerda e à direita,
@@ -127,7 +129,7 @@ class Board:
         e retorna uma instância da classe Board.
         """
         
-        matrix = np.full((10, 10), ".")
+        matrix = np.full((10, 10), 100)
         
         ROWS = stdin.readline()
         ROWS = ROWS.rstrip().split(" ")
@@ -139,6 +141,21 @@ class Board:
         COLUMNS.pop(0)
         COLUMNS = [int(i) for i in COLUMNS]
         
+        for i in COLUMNS:
+            if COLUMNS[i] == 0:
+                matrix[i] = 0
+            
+            # ver se ja ha uma peca na coluna que anule a coluna
+                
+        for i in ROWS:
+            if ROWS[i] == 0:
+                matrix[:,i] = 0
+            if np.count_nonzero(matrix[:,i] == 100) == ROWS[i]:
+                ROWS[i] = 0
+                matrix[:,i] = 1
+                
+            # ver se ja ha uma peca na linha que anule a linha
+        
         num_hints = int(stdin.readline())
         
         for i in range(num_hints):
@@ -146,7 +163,7 @@ class Board:
             hint = hint.rstrip().split(" ")
             hint.pop(0)
             hint = [int(hint[0]), int(hint[1]), hint[2]]
-            matrix[hint[0]][hint[1]] = hint[2]
+            matrix[hint[0]][hint[1]] = lambda hint: 0 if hint[2] == "W" else 1
         
         return Board(matrix)
 
@@ -213,8 +230,6 @@ if __name__ == "__main__":
     problem = Bimaru(board)
     # Criar um estado com a configuração inicial:
     
-    while problem.goal_test(state) == False:
-        # Escolher uma ação:
-        pass
-
-    
+    ok big discovery, meter todos os barcos que matematicamente consigo calcular,
+    e so depois é que vou começar a ir buscar uma posição random e a partir dai 
+    fazer procuras com base numa heuristica
