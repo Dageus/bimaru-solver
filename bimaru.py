@@ -38,8 +38,6 @@ Basear projeto no ship based model, aka reformular isto tudo
 
 """
 
-global ROWS, COLUMNS
-
 import sys
 from sys import stdin
 import numpy as np
@@ -73,11 +71,13 @@ class Board:
     
     """Representação interna de um tabuleiro de Bimaru.""" 
     
-    def __init__(self, matrix):
+    def __init__(self, matrix, rows, columns):
         """Construtor da classe. Recebe como argumentos uma matriz que representa
         o tabuleiro, uma lista com os espaços preenchidos nas linhas, uma lista
         com os espaços preenchidos nas colunas e uma lista com o número de peças"""
         self.matrix = matrix
+        self.rows = rows
+        self.columns = columns
 
     def get_value(self, row: int, col: int) -> str:
         """Devolve o valor na respetiva posição do tabuleiro."""
@@ -95,6 +95,10 @@ class Board:
         if self.matrix[row+1][col] == "." or self.matrix[row+1][col] == "W" or row + 1 > 9:
             cell2 = None
         return cell1, cell2
+    
+    def fill_ship_adjacent_values(self, row: int, col: int):
+        """Preenche os valores adjacentes à peça com água."""
+        #TODO
     
     #TODO adjacent values parra ate 4 para verificar se 2 hints formam o mm barco
 
@@ -131,30 +135,15 @@ class Board:
         
         matrix = np.full((10, 10), 100)
         
-        ROWS = stdin.readline()
-        ROWS = ROWS.rstrip().split(" ")
-        ROWS.pop(0)
-        ROWS = [int(i) for i in ROWS]
+        rows = stdin.readline()
+        rows = rows.rstrip().split(" ")
+        rows.pop(0)
+        rows = [int(i) for i in rows]
         
-        COLUMNS = stdin.readline()
-        COLUMNS = COLUMNS.rstrip().split(" ")
-        COLUMNS.pop(0)
-        COLUMNS = [int(i) for i in COLUMNS]
-        
-        for i in COLUMNS:
-            if COLUMNS[i] == 0:
-                matrix[i] = 0
-            
-            # ver se ja ha uma peca na coluna que anule a coluna
-                
-        for i in ROWS:
-            if ROWS[i] == 0:
-                matrix[:,i] = 0
-            if np.count_nonzero(matrix[:,i] == 100) == ROWS[i]:
-                ROWS[i] = 0
-                matrix[:,i] = 1
-                
-            # ver se ja ha uma peca na linha que anule a linha
+        columns = stdin.readline()
+        columns = columns.rstrip().split(" ")
+        columns.pop(0)
+        columns = [int(i) for i in columns]
         
         num_hints = int(stdin.readline())
         
@@ -163,9 +152,29 @@ class Board:
             hint = hint.rstrip().split(" ")
             hint.pop(0)
             hint = [int(hint[0]), int(hint[1]), hint[2]]
-            matrix[hint[0]][hint[1]] = lambda hint: 0 if hint[2] == "W" else 1
+            matrix[hint[0]][hint[1]] = hint[2]
+            
+            # preenchimento de água à volta da peça e possivel preenchimento de peça caso seja possível
+            
+            if hint[2] == TOP:
+                if hint[0] - 1 >= 0:
+                    matrix[hint[0]-1][hint[1]] = WATER
+            
+        for i in columns:
+            if columns[i] == 0:
+                matrix[i] = 0
+            if np.count_nonzero(matrix[i]) == columns[i]:
+                columns[i] = 0
+                matrix[i] = 0
+                
+        for i in rows:
+            if rows[i] == 0:
+                matrix[:,i] = 0
+            if np.count_nonzero(matrix[:,i]) == rows[i]:
+                rows[i] = 0
+                matrix[:,i] = 0
         
-        return Board(matrix)
+        return Board(matrix, rows, columns)
 
     # TODO: outros metodos da classe
 
