@@ -7,6 +7,7 @@
 # 10____ João Rocha
 
 WATER   = "W"
+UNDONE_BOAT = 1
 CIRCLE  = "C"
 TOP     = "T"
 MIDDLE  = "M"
@@ -17,26 +18,6 @@ RIGHT   = "R"
 #          1x1  2x1  3x1  4x1
 PIECES = [  4 ,  3 ,  2 ,  1  ]
 
-
-"""
-Sets:
-
-Note the following data:
-• Gridsl consists of the grids in which one ship of
-length l is located and is a subset of the overall set
-gridsall.
-• Gridsall consists of all grids in which one ship is
-located where each grid is numbered.
-It is the union of the grids in gridsl (i.e., U(l) grids(l)). 
-A particular grid is denoted by g, 
-where g ∈ {1,...,N}; N denotes the last grid.
-"""
-
-"""
-
-Basear projeto no ship based model, aka reformular isto tudo
-
-"""
 
 import sys
 from sys import stdin
@@ -115,17 +96,24 @@ class Board:
     
     def __str__(self):
         """Devolve uma string que representa o tabuleiro."""
-        str = ""
+        str_ = ""
+        
+        i = 0
         
         for rows in self.matrix:
             for col in rows:
-                str += col
-            str += "\n"
-        return str
+                str_ += col + " "
+            str_ += str(self.rows[i]) + "\n"
+            i+=1
+        
+        for elem in self.columns:
+            str_ += str(elem) + " "
+        str_ += "\n"
+        return str_
     
     def print(self):
         """Imprime o tabuleiro."""
-        return self.__str__()
+        return print(self.__str__())
 
     @staticmethod
     def parse_instance():
@@ -133,7 +121,7 @@ class Board:
         e retorna uma instância da classe Board.
         """
         
-        matrix = np.full((10, 10), 100)
+        matrix = np.full((10, 10), ".")
         
         rows = stdin.readline()
         rows = rows.rstrip().split(" ")
@@ -157,22 +145,115 @@ class Board:
             # preenchimento de água à volta da peça e possivel preenchimento de peça caso seja possível
             
             if hint[2] == TOP:
+                
+                matrix[hint[0] + 1][hint[1]] = UNDONE_BOAT
+                
                 if hint[0] - 1 >= 0:
                     matrix[hint[0]-1][hint[1]] = WATER
-            
-        for i in columns:
-            if columns[i] == 0:
-                matrix[i] = 0
-            if np.count_nonzero(matrix[i]) == columns[i]:
-                columns[i] = 0
-                matrix[i] = 0
+                if hint[1] - 1 >= 0:
+                    matrix[hint[0]][hint[1]-1] = WATER
+                    matrix[hint[0] + 1][hint[1]-1] = WATER
+                if hint[1] + 1 <= 9:
+                    matrix[hint[0]][hint[1]+1] = WATER
+                    matrix[hint[0] + 1][hint[1]+1] = WATER
+                if hint[0] - 1 >= 0 and hint[1] - 1 >= 0:
+                    matrix[hint[0]-1][hint[1]-1] = WATER
+                if hint[0] - 1 >= 0 and hint[1] + 1 <= 9:
+                    matrix[hint[0]-1][hint[1]+1] = WATER 
+                if hint[0] + 2 <= 9 and hint[1] - 1 >= 0:
+                    matrix[hint[0]+2][hint[1]-1] = WATER
+                if hint[0] + 2 <= 9 and hint[1] + 1 <= 9:
+                    matrix[hint[0]+2][hint[1]+1] = WATER
+                    
+            if hint[2] == BOTTOM:
                 
-        for i in rows:
+                matrix[hint[0] - 1][hint[1]] = UNDONE_BOAT
+                
+                if hint[0] + 1 <= 9:
+                    matrix[hint[0]+1][hint[1]] = WATER
+                if hint[1] - 1 >= 0:
+                    matrix[hint[0]][hint[1]-1] = WATER
+                    matrix[hint[0] - 1][hint[1]-1] = WATER
+                if hint[1] + 1 <= 9:
+                    matrix[hint[0]][hint[1]+1] = WATER
+                    matrix[hint[0] - 1][hint[1]+1] = WATER
+                if hint[0] + 1 <= 9 and hint[1] - 1 >= 0:
+                    matrix[hint[0]+1][hint[1]-1] = WATER
+                if hint[0] + 1 <= 9 and hint[1] + 1 <= 9:
+                    matrix[hint[0]+1][hint[1]+1] = WATER
+                if hint[0] - 2 >= 0 and hint[1] - 1 >= 0:
+                    matrix[hint[0]-2][hint[1]-1] = WATER
+                if hint[0] - 2 >= 0 and hint[1] + 1 <= 9:
+                    matrix[hint[0]-2][hint[1]+1] = WATER
+                    
+            if hint[2] == CIRCLE:
+                
+                if hint[0] - 1 >= 0:
+                    matrix[hint[0]-1][hint[1]] = WATER
+                if hint[0] + 1 <= 9:
+                    matrix[hint[0]+1][hint[1]] = WATER
+                if hint[1] - 1 >= 0:
+                    matrix[hint[0]][hint[1]-1] = WATER
+                if hint[1] + 1 <= 9:
+                    matrix[hint[0]][hint[1]+1] = WATER
+                if hint[0] - 1 >= 0 and hint[1] - 1 >= 0:
+                    matrix[hint[0]-1][hint[1]-1] = WATER
+                if hint[0] - 1 >= 0 and hint[1] + 1 <= 9:
+                    matrix[hint[0]-1][hint[1]+1] = WATER
+                if hint[0] + 1 <= 9 and hint[1] - 1 >= 0:
+                    matrix[hint[0]+1][hint[1]-1] = WATER
+                if hint[0] + 1 <= 9 and hint[1] + 1 <= 9:
+                    matrix[hint[0]+1][hint[1]+1] = WATER
+                    
+            if hint[2] == RIGHT:
+                
+                matrix[hint[0]][hint[1] - 1] = UNDONE_BOAT
+                
+                if hint[0] - 1 >= 0:
+                    matrix[hint[0]-1][hint[1]] = WATER
+                    matrix[hint[0]-1][hint[1] - 1] = WATER
+                if hint[0] + 1 <= 9:
+                    matrix[hint[0]+1][hint[1]] = WATER
+                    matrix[hint[0]+1][hint[1] - 1] = WATER
+                if hint[1] + 1 <= 9:
+                    matrix[hint[0]][hint[1]+1] = WATER
+                if hint[0] - 1 >= 0 and hint[1] + 1 <= 9:
+                    matrix[hint[0]-1][hint[1]+1] = WATER
+                if hint[0] + 1 <= 9 and hint[1] + 1 <= 9:
+                    matrix[hint[0]+1][hint[1]+1] = WATER
+                if hint[0] - 1 >= 0 and hint[1] - 2 >= 0:
+                    matrix[hint[0]-1][hint[1]-2] = WATER
+                if hint[0] + 1 <= 9 and hint[1] - 2 >= 0:
+                    matrix[hint[0]+1][hint[1]-2] = WATER
+                    
+            if hint[2] == LEFT:
+                
+                matrix[hint[0]][hint[1] + 1] = UNDONE_BOAT
+                
+                if hint[0] - 1 >= 0:
+                    matrix[hint[0]-1][hint[1]] = WATER
+                    matrix[hint[0]-1][hint[1] + 1] = WATER
+                if hint[0] + 1 <= 9:
+                    matrix[hint[0]+1][hint[1]] = WATER
+                    matrix[hint[0]+1][hint[1] + 1] = WATER
+                if hint[1] - 1 >= 0:
+                    matrix[hint[0]][hint[1]-1] = WATER
+                if hint[0] - 1 >= 0 and hint[1] - 1 >= 0:
+                    matrix[hint[0]-1][hint[1]-1] = WATER
+                if hint[0] + 1 <= 9 and hint[1] - 1 >= 0:
+                    matrix[hint[0]+1][hint[1]-1] = WATER
+                if hint[0] - 1 >= 0 and hint[1] + 2 <= 9:
+                    matrix[hint[0]-1][hint[1]+2] = WATER
+                if hint[0] + 1 <= 9 and hint[1] + 2 <= 9:
+                    matrix[hint[0]+1][hint[1]+2] = WATER
+            
+        for i in range(0, 10):
+            if columns[i] == 0:
+                matrix[:,i] = WATER
+                
+        for i in range(0, 10):
             if rows[i] == 0:
-                matrix[:,i] = 0
-            if np.count_nonzero(matrix[:,i]) == rows[i]:
-                rows[i] = 0
-                matrix[:,i] = 0
+                matrix[i] = WATER
         
         return Board(matrix, rows, columns)
 
@@ -238,7 +319,4 @@ if __name__ == "__main__":
     # Criar uma instância de Bimaru:
     problem = Bimaru(board)
     # Criar um estado com a configuração inicial:
-    
-    ok big discovery, meter todos os barcos que matematicamente consigo calcular,
-    e so depois é que vou começar a ir buscar uma posição random e a partir dai 
-    fazer procuras com base numa heuristica
+    print(str(board))
