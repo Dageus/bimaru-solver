@@ -7,7 +7,7 @@
 # 10____ João Rocha
 
 WATER   = "W"
-UNDONE_BOAT = 1
+UNDONE_BOAT = "1"
 CIRCLE  = "C"
 TOP     = "T"
 MIDDLE  = "M"
@@ -247,13 +247,27 @@ class Board:
                 if hint[0] + 1 <= 9 and hint[1] + 2 <= 9:
                     matrix[hint[0]+1][hint[1]+2] = WATER
             
+        # preenchimento de agua apos a colocacao de barcos e de mais barcos
+            
         for i in range(0, 10):
             if columns[i] == 0:
                 matrix[:,i] = WATER
+            column = matrix[:,i]
+            if np.count_nonzero((column == BOTTOM) | (column == TOP) | (column == CIRCLE) | (column == RIGHT) | (column == LEFT) | (column == UNDONE_BOAT)) == columns[i]:
+                for j in range(0, 10):
+                    if matrix[j][i] == '.':
+                        matrix[j][i] = WATER
                 
         for i in range(0, 10):
             if rows[i] == 0:
                 matrix[i] = WATER
+            row = matrix[i]
+            if np.count_nonzero((row == BOTTOM) | (row == TOP) | (row == CIRCLE) | (row == RIGHT) | (row == LEFT) | (column == UNDONE_BOAT)) == rows[i]:
+                for j in range(0, 10):
+                    if matrix[i][j] == '.':
+                        matrix[i][j] = WATER
+        
+        
         
         return Board(matrix, rows, columns)
 
