@@ -65,32 +65,38 @@ class Board:
         if self.matrix[row][col] == ".":
             return None
         return self.matrix[row][col]
-
-    def adjacent_vertical_values(self, row: int, col: int) -> tuple:
+    
+    def fill_ship_adjacent_values(self, row: int, col: int):
+            """Preenche os valores adjacentes à peça com água."""
+            #TODO
+        
+        #TODO adjacent values parra ate 4 para verificar se 2 hints formam o mm barco
+        
+    @staticmethod
+    def adjacent_vertical_values(matrix: list, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente acima e abaixo,
         respectivamente."""
-        cell1 = self.matrix[row-1][col]
-        cell2 = self.matrix[row+1][col]
-        if self.matrix[row-1][col] == "." or self.matrix[row-1][col] == "W" or row - 1 < 0:
+        cell1 = matrix[row-1][col]
+        cell2 = matrix[row+1][col]
+        print(cell1, cell2)
+        if matrix[row-1][col] == "." or row - 1 < 0:
             cell1 = None
-        if self.matrix[row+1][col] == "." or self.matrix[row+1][col] == "W" or row + 1 > 9:
+        if matrix[row+1][col] == "." or row + 1 > 9:
             cell2 = None
         return cell1, cell2
     
-    def fill_ship_adjacent_values(self, row: int, col: int):
-        """Preenche os valores adjacentes à peça com água."""
-        #TODO
     
-    #TODO adjacent values parra ate 4 para verificar se 2 hints formam o mm barco
 
-    def adjacent_horizontal_values(self, row: int, col: int) -> tuple:
+    @staticmethod
+    def adjacent_horizontal_values(matrix: list, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
-        cell1 = self.matrix[row][col-1]
-        cell2 = self.matrix[row][col+1]
-        if self.matrix[row][col-1] == "." or self.matrix[row][col-1] == "W" or col - 1 < 0:
+        cell1 = matrix[row][col-1]
+        cell2 = matrix[row][col+1]
+        print(cell1, cell2)
+        if matrix[row][col-1] == "." or col - 1 < 0:
             cell1 = None
-        if self.matrix[row][col+1] == "." or self.matrix[row][col+1] == "W" or col + 1 > 9:
+        if matrix[row][col+1] == "." or col + 1 > 9:
             cell2 = None
         return cell1, cell2
     
@@ -253,19 +259,49 @@ class Board:
             if columns[i] == 0:
                 matrix[:,i] = WATER
             column = matrix[:,i]
-            if np.count_nonzero((column == BOTTOM) | (column == TOP) | (column == CIRCLE) | (column == RIGHT) | (column == LEFT) | (column == UNDONE_BOAT)) == columns[i]:
+            if np.count_nonzero((column == BOTTOM) | (column == TOP) | \
+                (column == CIRCLE) | (column == RIGHT) | (column == LEFT) | \
+                (column == MIDDLE) | (column == UNDONE_BOAT)) == columns[i]:
                 for j in range(0, 10):
                     if matrix[j][i] == '.':
                         matrix[j][i] = WATER
+                    if matrix[j][i] == UNDONE_BOAT:
+                        #TODO
+                        pass
+                    # if matrix[i][j] == MIDDLE:
+                    #     print("MIDDLE")
+                    #     if any(WATER != i for i in  Board.adjacent_vertical_values(matrix, i, j)):
+                    #         print("water is not present in: " + str(Board.adjacent_vertical_values(matrix, i, j)))
+                    #         matrix[i - 1][j] = UNDONE_BOAT
+                    #         matrix[i + 1][j] = UNDONE_BOAT
+                    #     if any(WATER != i for i in  Board.adjacent_horizontal_values(matrix, i, j)):
+                    #         print("water is not present in: " + str(Board.adjacent_horizontal_values(matrix, i, j)))
+                    #         matrix[i][j - 1] = UNDONE_BOAT
+                    #         matrix[i][j + 1] = UNDONE_BOAT
                 
         for i in range(0, 10):
             if rows[i] == 0:
                 matrix[i] = WATER
             row = matrix[i]
-            if np.count_nonzero((row == BOTTOM) | (row == TOP) | (row == CIRCLE) | (row == RIGHT) | (row == LEFT) | (column == UNDONE_BOAT)) == rows[i]:
+            if np.count_nonzero((row == BOTTOM) | (row == TOP) | (row == CIRCLE) |\
+                (row == RIGHT) | (row == LEFT) | (row == MIDDLE) |\
+                (row == UNDONE_BOAT)) == rows[i]:
                 for j in range(0, 10):
                     if matrix[i][j] == '.':
                         matrix[i][j] = WATER
+                    if matrix[i][j] == UNDONE_BOAT:
+                        #TODO
+                        pass
+                    # if matrix[i][j] == MIDDLE:
+                    #     print("MIDDLE") 
+                    #     if any(WATER != i for i in Board.adjacent_vertical_values(matrix, i, j)):
+                    #         print("water is not present in: " + str(Board.adjacent_vertical_values(matrix, i, j)))
+                    #         matrix[i - 1][j] = UNDONE_BOAT
+                    #         matrix[i + 1][j] = UNDONE_BOAT
+                    #     if any(WATER != i for i in Board.adjacent_horizontal_values(matrix, i, j)):
+                    #         print("water is not present in: " + str(Board.adjacent_horizontal_values(matrix, i, j)))
+                    #         matrix[i][j - 1] = UNDONE_BOAT
+                    #         matrix[i][j + 1] = UNDONE_BOAT
         
         
         
