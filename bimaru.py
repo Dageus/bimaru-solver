@@ -78,7 +78,6 @@ class Board:
         respectivamente."""
         cell1 = matrix[row-1][col]
         cell2 = matrix[row+1][col]
-        print(cell1, cell2)
         if matrix[row-1][col] == "." or row - 1 < 0:
             cell1 = None
         if matrix[row+1][col] == "." or row + 1 > 9:
@@ -93,7 +92,6 @@ class Board:
         respectivamente."""
         cell1 = matrix[row][col-1]
         cell2 = matrix[row][col+1]
-        print(cell1, cell2)
         if matrix[row][col-1] == "." or col - 1 < 0:
             cell1 = None
         if matrix[row][col+1] == "." or col + 1 > 9:
@@ -270,16 +268,6 @@ class Board:
                     if matrix[j][i] == UNDONE_BOAT:
                         #TODO
                         pass
-                    # if matrix[i][j] == MIDDLE:
-                    #     print("MIDDLE")
-                    #     if any(WATER != i for i in  Board.adjacent_vertical_values(matrix, i, j)):
-                    #         print("water is not present in: " + str(Board.adjacent_vertical_values(matrix, i, j)))
-                    #         matrix[i - 1][j] = UNDONE_BOAT
-                    #         matrix[i + 1][j] = UNDONE_BOAT
-                    #     if any(WATER != i for i in  Board.adjacent_horizontal_values(matrix, i, j)):
-                    #         print("water is not present in: " + str(Board.adjacent_horizontal_values(matrix, i, j)))
-                    #         matrix[i][j - 1] = UNDONE_BOAT
-                    #         matrix[i][j + 1] = UNDONE_BOAT
                 
         for i in range(0, 10):
             if rows[i] == 0:
@@ -292,16 +280,62 @@ class Board:
                     if matrix[i][j] == UNDONE_BOAT:
                         #TODO
                         pass
-                    # if matrix[i][j] == MIDDLE:
-                    #     print("MIDDLE") 
-                    #     if any(WATER != i for i in Board.adjacent_vertical_values(matrix, i, j)):
-                    #         print("water is not present in: " + str(Board.adjacent_vertical_values(matrix, i, j)))
-                    #         matrix[i - 1][j] = UNDONE_BOAT
-                    #         matrix[i + 1][j] = UNDONE_BOAT
-                    #     if any(WATER != i for i in Board.adjacent_horizontal_values(matrix, i, j)):
-                    #         print("water is not present in: " + str(Board.adjacent_horizontal_values(matrix, i, j)))
-                    #         matrix[i][j - 1] = UNDONE_BOAT
-                    #         matrix[i][j + 1] = UNDONE_BOAT
+        
+        for i in range(10):
+            for j in range(10):
+                if np.count_nonzero((matrix[i] == WATER) | (matrix[i] == '.')) == 10 - rows[i]:
+                    for k in range(10):
+                        if matrix[i][k] == '.':
+                            matrix[i][k] = WATER
+                if np.count_nonzero((matrix[i] == WATER)) == 10 - rows[i]:
+                    for k in range(10):
+                        if matrix[i][k] == '.':
+                            matrix[i][k] = UNDONE_BOAT
+                if np.count_nonzero((matrix[:,i] == WATER)) == 10 - columns[i]:
+                    for k in range(10):
+                        if matrix[k][i] == '.':
+                            matrix[k][i] = UNDONE_BOAT
+                if np.count_nonzero((matrix[:,i] == WATER) | (matrix[:,i] == '.')) == 10 - columns[i]:
+                    for k in range(10):
+                        if matrix[k][i] == '.':
+                            matrix[k][i] = WATER
+                if matrix[i][j] == MIDDLE:
+                    adjacent_values = Board.adjacent_horizontal_values(matrix, i, j)
+                    if adjacent_values[0] != WATER and adjacent_values[1] != WATER:
+                        matrix[i][j - 1] = UNDONE_BOAT
+                        matrix[i][j + 1] = UNDONE_BOAT
+                        # preencher espaço à volta com água
+                        matrix[i - 1][j - 1] = WATER
+                        matrix[i - 1][j + 1] = WATER
+                        matrix[i + 1][j] = WATER
+                        matrix[i - 1][j] = WATER
+                        if i + 2 <= 9:
+                            matrix[i + 2][j + 1] = WATER
+                            matrix[i + 2][j - 1] = WATER
+                        if i - 2 >= 0:
+                            matrix[i - 2][j + 1] = WATER
+                            matrix[i - 2][j - 1] = WATER
+                    adjacent_values = Board.adjacent_vertical_values(matrix, i, j)
+                    if adjacent_values[0] != WATER and adjacent_values[1] != WATER:
+                        matrix[i - 1][j] = UNDONE_BOAT
+                        matrix[i + 1][j] = UNDONE_BOAT
+                        # preencher espaço à volta com água
+                        matrix[i - 1][j - 1] = WATER
+                        matrix[i - 1][j + 1] = WATER
+                        matrix[i][j + 1] = WATER
+                        matrix[i][j - 1] = WATER
+                        matrix[i + 1][j - 1] = WATER
+                        matrix[i + 1][j + 1] = WATER
+                        if i + 2 <= 9:
+                            matrix[i + 2][j + 1] = WATER
+                            matrix[i + 2][j - 1] = WATER
+                        if i - 2 >= 0:
+                            matrix[i - 2][j + 1] = WATER
+                            matrix[i - 2][j - 1] = WATER
+                    if np.count_nonzero((matrix[i] == WATER) | (matrix[i] == '.')) == 10 - rows[i]:
+                        for k in range(0, 10):
+                            if matrix[i][k] == '.':
+                                matrix[i][k] = WATER
         
         
         
@@ -316,10 +350,10 @@ class Bimaru(Problem):
         self.board = board
         #TODO add more attributes
 
-    def is_valid_vertical_action( board, row, col):
+    def is_valid_vertical_action(self, board, row, col):
         """Verifica se colocar uma parte de barco na vertical na posição dada é válido"""
 
-        tuple_cells = adjacent_vertical_values(board, row, col)
+        tuple_cells = self.board.adjacent_vertical_values(board, row, col)
         
 
         if tuple_cells[0] == WATER and tuple_cells[1] == WATER:
@@ -327,10 +361,10 @@ class Bimaru(Problem):
     
         return False
 
-    def is_valid_horizontal_action( board, row, col):
+    def is_valid_horizontal_action(self, board, row, col):
         """Verifica se colocar uma parte de barco na horizontal na posição dada é válido"""
         
-        tuple_cells = adjacent_horizontal_values(board, row, col)
+        tuple_cells = self.board.adjacent_horizontal_values(board, row, col)
         
         
         if tuple_cells[0] == WATER and tuple_cells[1] == WATER:
@@ -348,10 +382,10 @@ class Bimaru(Problem):
         for row in range(len(10)):
             for col in range(len(10)):
                 if board.get_value(row, col) == '.':
-                    """ver se encaixa na vertical """
+                    # ver se encaixa na vertical
                     if self.is_valid_vertical_action(board, row, col):
                         actions.append((row, col, VERTICAL))
-                    """ver se encaixa na horizontal """
+                    # ver se encaixa na horizontal
                     if self.is_valid_horizontal_action(board, row, col):
                         actions.append((row, col, HORIZONTAL))
         return actions
@@ -376,7 +410,11 @@ class Bimaru(Problem):
         """Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas de acordo com as regras do problema."""
-        #TODO
+        
+        for i in range(10):
+            for j in range(10):
+                
+                pass
                     
                 
 
