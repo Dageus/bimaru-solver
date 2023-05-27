@@ -130,12 +130,12 @@ class Board:
         matrix = np.full((10, 10), ".")
         
         rows = stdin.readline()
-        rows = rows.rstrip().split(" ")
+        rows = rows.rstrip().split("\t")
         rows.pop(0)
         rows = [int(i) for i in rows]
         
         columns = stdin.readline()
-        columns = columns.rstrip().split(" ")
+        columns = columns.rstrip().split("\t")
         columns.pop(0)
         columns = [int(i) for i in columns]
         
@@ -143,115 +143,119 @@ class Board:
         
         for i in range(num_hints):
             hint = stdin.readline()
-            hint = hint.rstrip().split(" ")
+            hint = hint.rstrip().split("\t")
             hint.pop(0)
             hint = [int(hint[0]), int(hint[1]), hint[2]]
-            matrix[hint[0]][hint[1]] = hint[2]
+
+            row = hint[0]
+            col = hint[1]
+
+            matrix[row][col] = hint[2]
             
             # preenchimento de água à volta da peça e possivel preenchimento de peça caso seja possível
             
             if hint[2] == TOP:
                 
-                matrix[hint[0] + 1][hint[1]] = UNDONE_BOAT
+                matrix[row + 1][col] = UNDONE_BOAT
                 
-                if hint[0] - 1 >= 0:
-                    matrix[hint[0]-1][hint[1]] = WATER
-                if hint[1] - 1 >= 0:
-                    matrix[hint[0]][hint[1]-1] = WATER
-                    matrix[hint[0] + 1][hint[1]-1] = WATER
-                if hint[1] + 1 <= 9:
-                    matrix[hint[0]][hint[1]+1] = WATER
-                    matrix[hint[0] + 1][hint[1]+1] = WATER
-                if hint[0] - 1 >= 0 and hint[1] - 1 >= 0:
-                    matrix[hint[0]-1][hint[1]-1] = WATER
-                if hint[0] - 1 >= 0 and hint[1] + 1 <= 9:
-                    matrix[hint[0]-1][hint[1]+1] = WATER 
-                if hint[0] + 2 <= 9 and hint[1] - 1 >= 0:
-                    matrix[hint[0]+2][hint[1]-1] = WATER
-                if hint[0] + 2 <= 9 and hint[1] + 1 <= 9:
-                    matrix[hint[0]+2][hint[1]+1] = WATER
+                if row - 1 >= 0:
+                    matrix[row-1][col] = WATER
+                if col - 1 >= 0:
+                    matrix[row][col-1] = WATER
+                    matrix[row + 1][col-1] = WATER
+                    if row - 1 >= 0:
+                        matrix[row-1][col-1] = WATER
+                    if row + 2 <= 9:
+                        matrix[row+2][col-1] = WATER
+                if col + 1 <= 9: 
+                    matrix[row][col+1] = WATER
+                    matrix[row + 1][col+1] = WATER
+                    if row - 1 >= 0:
+                        matrix[row-1][col+1] = WATER 
+                    if row + 2 <= 9:
+                        matrix[row+2][col+1] = WATER
                     
             if hint[2] == BOTTOM:
                 
-                matrix[hint[0] - 1][hint[1]] = UNDONE_BOAT
+                matrix[row - 1][col] = UNDONE_BOAT
                 
-                if hint[0] + 1 <= 9:
-                    matrix[hint[0]+1][hint[1]] = WATER
-                if hint[1] - 1 >= 0:
-                    matrix[hint[0]][hint[1]-1] = WATER
-                    matrix[hint[0] - 1][hint[1]-1] = WATER
-                if hint[1] + 1 <= 9:
-                    matrix[hint[0]][hint[1]+1] = WATER
-                    matrix[hint[0] - 1][hint[1]+1] = WATER
-                if hint[0] + 1 <= 9 and hint[1] - 1 >= 0:
-                    matrix[hint[0]+1][hint[1]-1] = WATER
-                if hint[0] + 1 <= 9 and hint[1] + 1 <= 9:
-                    matrix[hint[0]+1][hint[1]+1] = WATER
-                if hint[0] - 2 >= 0 and hint[1] - 1 >= 0:
-                    matrix[hint[0]-2][hint[1]-1] = WATER
-                if hint[0] - 2 >= 0 and hint[1] + 1 <= 9:
-                    matrix[hint[0]-2][hint[1]+1] = WATER
+                if row + 1 <= 9:
+                    matrix[row+1][col] = WATER
+                if col - 1 >= 0:
+                    matrix[row][col-1] = WATER
+                    matrix[row - 1][col-1] = WATER
+                    if row + 1 <= 9: 
+                        matrix[row+1][col-1] = WATER
+                    if row - 2 >= 0:
+                        matrix[row-2][col-1] = WATER
+                if col + 1 <= 9:
+                    matrix[row][col+1] = WATER
+                    matrix[row - 1][col+1] = WATER
+                    if row + 1 <= 9:
+                        matrix[row+1][col+1] = WATER
+                    if row - 2 >= 0:
+                        matrix[row-2][col+1] = WATER
                     
             if hint[2] == CIRCLE:
                 
-                if hint[0] - 1 >= 0:
-                    matrix[hint[0]-1][hint[1]] = WATER
-                if hint[0] + 1 <= 9:
-                    matrix[hint[0]+1][hint[1]] = WATER
-                if hint[1] - 1 >= 0:
-                    matrix[hint[0]][hint[1]-1] = WATER
-                if hint[1] + 1 <= 9:
-                    matrix[hint[0]][hint[1]+1] = WATER
-                if hint[0] - 1 >= 0 and hint[1] - 1 >= 0:
-                    matrix[hint[0]-1][hint[1]-1] = WATER
-                if hint[0] - 1 >= 0 and hint[1] + 1 <= 9:
-                    matrix[hint[0]-1][hint[1]+1] = WATER
-                if hint[0] + 1 <= 9 and hint[1] - 1 >= 0:
-                    matrix[hint[0]+1][hint[1]-1] = WATER
-                if hint[0] + 1 <= 9 and hint[1] + 1 <= 9:
-                    matrix[hint[0]+1][hint[1]+1] = WATER
+                if row - 1 >= 0:
+                    matrix[row-1][col] = WATER
+                if row + 1 <= 9:
+                    matrix[row+1][col] = WATER
+                if col - 1 >= 0:
+                    matrix[row][col-1] = WATER
+                if col + 1 <= 9:
+                    matrix[row][col+1] = WATER
+                if row - 1 >= 0 and col - 1 >= 0:
+                    matrix[row-1][col-1] = WATER
+                if row - 1 >= 0 and col + 1 <= 9:
+                    matrix[row-1][col+1] = WATER
+                if row + 1 <= 9 and col - 1 >= 0:
+                    matrix[row+1][col-1] = WATER
+                if row + 1 <= 9 and col + 1 <= 9:
+                    matrix[row+1][col+1] = WATER
                     
             if hint[2] == RIGHT:
                 
-                matrix[hint[0]][hint[1] - 1] = UNDONE_BOAT
+                matrix[row][col - 1] = UNDONE_BOAT
                 
-                if hint[0] - 1 >= 0:
-                    matrix[hint[0]-1][hint[1]] = WATER
-                    matrix[hint[0]-1][hint[1] - 1] = WATER
-                if hint[0] + 1 <= 9:
-                    matrix[hint[0]+1][hint[1]] = WATER
-                    matrix[hint[0]+1][hint[1] - 1] = WATER
-                if hint[1] + 1 <= 9:
-                    matrix[hint[0]][hint[1]+1] = WATER
-                if hint[0] - 1 >= 0 and hint[1] + 1 <= 9:
-                    matrix[hint[0]-1][hint[1]+1] = WATER
-                if hint[0] + 1 <= 9 and hint[1] + 1 <= 9:
-                    matrix[hint[0]+1][hint[1]+1] = WATER
-                if hint[0] - 1 >= 0 and hint[1] - 2 >= 0:
-                    matrix[hint[0]-1][hint[1]-2] = WATER
-                if hint[0] + 1 <= 9 and hint[1] - 2 >= 0:
-                    matrix[hint[0]+1][hint[1]-2] = WATER
+                if row - 1 >= 0:
+                    matrix[row-1][col] = WATER
+                    matrix[row-1][col - 1] = WATER
+                if row + 1 <= 9:
+                    matrix[row+1][col] = WATER
+                    matrix[row+1][col - 1] = WATER
+                if col + 1 <= 9:
+                    matrix[row][col+1] = WATER
+                if row - 1 >= 0 and col + 1 <= 9:
+                    matrix[row-1][col+1] = WATER
+                if row + 1 <= 9 and col + 1 <= 9:
+                    matrix[row+1][col+1] = WATER
+                if row - 1 >= 0 and col - 2 >= 0:
+                    matrix[row-1][col-2] = WATER
+                if row + 1 <= 9 and col - 2 >= 0:
+                    matrix[row+1][col-2] = WATER
                     
             if hint[2] == LEFT:
                 
-                matrix[hint[0]][hint[1] + 1] = UNDONE_BOAT
+                matrix[row][col + 1] = UNDONE_BOAT
                 
-                if hint[0] - 1 >= 0:
-                    matrix[hint[0]-1][hint[1]] = WATER
-                    matrix[hint[0]-1][hint[1] + 1] = WATER
-                if hint[0] + 1 <= 9:
-                    matrix[hint[0]+1][hint[1]] = WATER
-                    matrix[hint[0]+1][hint[1] + 1] = WATER
-                if hint[1] - 1 >= 0:
-                    matrix[hint[0]][hint[1]-1] = WATER
-                if hint[0] - 1 >= 0 and hint[1] - 1 >= 0:
-                    matrix[hint[0]-1][hint[1]-1] = WATER
-                if hint[0] + 1 <= 9 and hint[1] - 1 >= 0:
-                    matrix[hint[0]+1][hint[1]-1] = WATER
-                if hint[0] - 1 >= 0 and hint[1] + 2 <= 9:
-                    matrix[hint[0]-1][hint[1]+2] = WATER
-                if hint[0] + 1 <= 9 and hint[1] + 2 <= 9:
-                    matrix[hint[0]+1][hint[1]+2] = WATER
+                if row - 1 >= 0:
+                    matrix[row-1][col] = WATER
+                    matrix[row-1][col + 1] = WATER
+                if row + 1 <= 9:
+                    matrix[row+1][col] = WATER
+                    matrix[row+1][col + 1] = WATER
+                if col - 1 >= 0:
+                    matrix[row][col-1] = WATER
+                if row - 1 >= 0 and col - 1 >= 0:
+                    matrix[row-1][col-1] = WATER
+                if row + 1 <= 9 and col - 1 >= 0:
+                    matrix[row+1][col-1] = WATER
+                if row - 1 >= 0 and col + 2 <= 9:
+                    matrix[row-1][col+2] = WATER
+                if row + 1 <= 9 and col + 2 <= 9:
+                    matrix[row+1][col+2] = WATER
             
         # preenchimento de agua apos a colocacao de barcos e de mais barcos
             
@@ -259,9 +263,7 @@ class Board:
             if columns[i] == 0:
                 matrix[:,i] = WATER
             column = matrix[:,i]
-            if np.count_nonzero((column == BOTTOM) | (column == TOP) | \
-                (column == CIRCLE) | (column == RIGHT) | (column == LEFT) | \
-                (column == MIDDLE) | (column == UNDONE_BOAT)) == columns[i]:
+            if np.count_nonzero((column == WATER) | (column == '.')) == 10 - columns[i]:
                 for j in range(0, 10):
                     if matrix[j][i] == '.':
                         matrix[j][i] = WATER
@@ -283,9 +285,7 @@ class Board:
             if rows[i] == 0:
                 matrix[i] = WATER
             row = matrix[i]
-            if np.count_nonzero((row == BOTTOM) | (row == TOP) | (row == CIRCLE) |\
-                (row == RIGHT) | (row == LEFT) | (row == MIDDLE) |\
-                (row == UNDONE_BOAT)) == rows[i]:
+            if np.count_nonzero((row == WATER) | (row == '.')) == 10 - rows[i]:
                 for j in range(0, 10):
                     if matrix[i][j] == '.':
                         matrix[i][j] = WATER
@@ -316,15 +316,45 @@ class Bimaru(Problem):
         self.board = board
         #TODO add more attributes
 
+    def is_valid_vertical_action( board, row, col):
+        """Verifica se colocar uma parte de barco na vertical na posição dada é válido"""
+
+        tuple_cells = adjacent_vertical_values(board, row, col)
+        
+
+        if tuple_cells[0] == WATER and tuple_cells[1] == WATER:
+            return True
+    
+        return False
+
+    def is_valid_horizontal_action( board, row, col):
+        """Verifica se colocar uma parte de barco na horizontal na posição dada é válido"""
+        
+        tuple_cells = adjacent_horizontal_values(board, row, col)
+        
+        
+        if tuple_cells[0] == WATER and tuple_cells[1] == WATER:
+            return True
+        
+        return False
+
+
     def actions(self, state: BimaruState):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
         # TODO
         board = state.board
         actions = []
-        while True:
-            #TODO
-            break
+        for row in range(len(10)):
+            for col in range(len(10)):
+                if board.get_value(row, col) == '.':
+                    """ver se encaixa na vertical """
+                    if self.is_valid_vertical_action(board, row, col):
+                        actions.append((row, col, VERTICAL))
+                    """ver se encaixa na horizontal """
+                    if self.is_valid_horizontal_action(board, row, col):
+                        actions.append((row, col, HORIZONTAL))
+        return actions
 
     def result(self, state: BimaruState, action):
         """Retorna o estado resultante de executar a 'action' sobre
