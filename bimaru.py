@@ -478,6 +478,22 @@ class Bimaru(Problem):
             return None
         else:
             state.board.matrix[action[0]][action[1]] = action[2]
+            
+            # ver se ao colocar a peça, o barco fica completo
+            
+            column = state.board.matrix[:, action[1]]
+            row = state.board.matrix[action[0]]
+            
+            non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == UNDONE_BOAT))
+            if len(non_zeros) == state.board.columns[action[1]]:
+                # a ideia aqui era ver se se pode retirar alguma das peças das que faltam completar, mas nao sei se esta certo
+                pass
+                
+            non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == UNDONE_BOAT))
+            if len(non_zeros) == state.board.rows[action[0]]:
+                # a ideia aqui era ver se se pode retirar alguma das peças das que faltam completar, mas nao sei se esta certo
+                pass
+            
         return BimaruState(state.board) 
 
     def goal_test(self, state: BimaruState):
