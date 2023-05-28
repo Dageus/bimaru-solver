@@ -97,7 +97,39 @@ class Board:
         if self.matrix[row][col+1] == "." or col + 1 > 9:
             cell2 = None
         return cell1, cell2
-    
+
+    def adjacent_diagonal1_values(self, row: int, col: int) -> tuple:
+        """Devolve os valores imediatamente acima e abaixo,
+        respectivamente."""
+        cell1 = self.matrix[row-1][col-1]
+        cell2 = self.matrix[row+1][col+1]
+        if self.matrix[row-1][col-1] == "." or row - 1 < 0 or col - 1 < 0:
+            cell1 = None
+        if self.matrix[row+1][col+1] == "." or row + 1 > 9 or col + 1 > 9:
+            cell2 = None
+        return cell1, cell2
+
+    def adjacent_diagonal2_values(self, row: int, col: int) -> tuple:
+        """Devolve os valores imediatamente acima e abaixo,
+        respectivamente."""
+        cell1 = self.matrix[row-1][col+1]
+        cell2 = self.matrix[row+1][col-1]
+        if self.matrix[row-1][col+1] == "." or row - 1 < 0 or col + 1 > 9:
+            cell1 = None
+        if self.matrix[row+1][col-1] == "." or row + 1 > 9 or col - 1 < 0:
+            cell2 = None
+        return cell1, cell2
+
+    def adjacent_values(self, row: int, col: int) -> tuple: 
+        """Devolve os valores imediatamente acima, abaixo, à esquerda e à direita,
+        respectivamente."""
+        return \
+        self.adjacent_vertical_values(row, col) + \
+        self.adjacent_horizontal_values(row, col) + \
+        self.adjacent_diagonal1_values(row, col) + \
+        self.adjacent_diagonal2_values(row, col)
+
+        
     def __str__(self):
         """Devolve uma string que representa o tabuleiro."""
         
@@ -360,32 +392,56 @@ class Board:
         return self
 
 
+    def count_boats(self):
+        """Retorna o maior barco que ainda não foi colocado"""
+        boats={1:4, 2:3, 3:2, 4:1}
+        badbad = (WATER,  '.')
+        for row in range(0, 10):
+            for col in range(0, 10):
+                count = 1
+                if self.board[row][col] == TOP:
+                    for i in range(0, 10):
+                        if self.board[row + i][col] not in badbad:
+                            count += 1
+                        if self.board[row + i][col] == BOTTOM:
+                            boats[count] -= 1
+                            break
+                elif self.board[row][col] == LEFT:
+                    for i in range(0, 10):
+                        if self.board[row][col + i] not in badbad:
+                            count += 1
+                        if self.board[row][col + i] == RIGHT:
+                            boats[count] -= 1
+                            break
+        for i in range(4,0,-1):
+            if boats[i] != 0:
+                return i
+        return 0
+
+
 class Bimaru(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
         self.board = board
         #TODO add more attributes
 
-    def is_valid_vertical_action(self, board, row, col):
-        """Verifica se colocar uma parte de barco na vertical na posição dada é válido"""
 
-        tuple_cells = self.board.adjacent_vertical_values(board, row, col)
-
-        if tuple_cells[0] == WATER and tuple_cells[1] == WATER:
-            return True
-    
-        return False
-
-    def is_valid_horizontal_action(self, board, row, col):
+    def is_valid_position(self, board, row, col):
         """Verifica se colocar uma parte de barco na horizontal na posição dada é válido"""
         
-        tuple_cells = self.board.adjacent_horizontal_values(board, row, col)
+        tuple_cells = self.board.adjacent_values(board, row, col)
+
+        if (self.board[row][col] = LEFT)
+            if tuple_cells[0] == WATER and tuple_cells[1] == WATER and tuple_cells[2] == WATER and tuple_cells[3] == '.':
+                return True
         
         if tuple_cells[0] == WATER and tuple_cells[1] == WATER:
             return True
         
         return False
 
+# (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
+    
 
     def actions(self, state: BimaruState):
         """Retorna uma lista de ações que podem ser executadas a
@@ -397,18 +453,16 @@ class Bimaru(Problem):
         
         board = state.board
         actions = []
+        boat_size = board.count_boats()
+        count = 0
         for row in range(10):
             for col in range(10):
-                if board.get_value(row, col) == BOAT:
-                    continue
+                if (is_valid_position(board, row, col)):
+                    count += 1
+
+
+
                 
-                if board.get_value(row, col) == '.':
-                    # ver se encaixa na vertical
-                    if self.is_valid_vertical_action(board, row, col):
-                        actions.append((row, col, VERTICAL))
-                    # ver se encaixa na horizontal
-                    if self.is_valid_horizontal_action(board, row, col):
-                        actions.append((row, col, HORIZONTAL))
         
         return actions
 
