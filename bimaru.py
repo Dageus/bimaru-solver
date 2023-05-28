@@ -15,6 +15,11 @@ BOTTOM  = "B"
 LEFT    = "L"
 RIGHT   = "R"
 
+CIRCLE_INDEX = 0
+SMALL_BOAT_INDEX = 1
+MEDIUM_BOAT_INDEX = 2
+BIG_BOAT_INDEX = 3
+
 #          1x1  2x1  3x1  4x1
 PIECES = [  4 ,  3 ,  2 ,  1  ]
 
@@ -52,13 +57,15 @@ class Board:
     
     """Representação interna de um tabuleiro de Bimaru.""" 
     
-    def __init__(self, matrix, rows, columns):
+    def __init__(self, matrix, rows, columns, hints):
         """Construtor da classe. Recebe como argumentos uma matriz que representa
         o tabuleiro, uma lista com os espaços preenchidos nas linhas, uma lista
         com os espaços preenchidos nas colunas e uma lista com o número de peças"""
         self.matrix = matrix
         self.rows = rows
         self.columns = columns
+        self.hints = hints
+        self.pieces = PIECES
 
     def get_value(self, row: int, col: int) -> str:
         """Devolve o valor na respetiva posição do tabuleiro."""
@@ -66,40 +73,34 @@ class Board:
             return None
         return self.matrix[row][col]
     
-    def fill_ship_adjacent_values(self, row: int, col: int):
-            """Preenche os valores adjacentes à peça com água."""
-            #TODO
+    #TODO adjacent values parra ate 4 para verificar se 2 hints formam o mm barco
         
-        #TODO adjacent values parra ate 4 para verificar se 2 hints formam o mm barco
-        
-    @staticmethod
-    def adjacent_vertical_values(matrix: list, row: int, col: int) -> tuple:
+    def adjacent_vertical_values(self, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente acima e abaixo,
         respectivamente."""
-        cell1 = matrix[row-1][col]
-        cell2 = matrix[row+1][col]
-        if matrix[row-1][col] == "." or row - 1 < 0:
+        cell1 = self.matrix[row-1][col]
+        cell2 = self.matrix[row+1][col]
+        if self.matrix[row-1][col] == "." or row - 1 < 0:
             cell1 = None
-        if matrix[row+1][col] == "." or row + 1 > 9:
+        if self.matrix[row+1][col] == "." or row + 1 > 9:
             cell2 = None
         return cell1, cell2
     
-    
 
-    @staticmethod
-    def adjacent_horizontal_values(matrix: list, row: int, col: int) -> tuple:
+    def adjacent_horizontal_values(self, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
-        cell1 = matrix[row][col-1]
-        cell2 = matrix[row][col+1]
-        if matrix[row][col-1] == "." or col - 1 < 0:
+        cell1 = self.matrix[row][col-1]
+        cell2 = self.matrix[row][col+1]
+        if self.matrix[row][col-1] == "." or col - 1 < 0:
             cell1 = None
-        if matrix[row][col+1] == "." or col + 1 > 9:
+        if self.matrix[row][col+1] == "." or col + 1 > 9:
             cell2 = None
         return cell1, cell2
     
     def __str__(self):
         """Devolve uma string que representa o tabuleiro."""
+        
         str_ = ""
         
         i = 0
@@ -139,153 +140,170 @@ class Board:
         
         num_hints = int(stdin.readline())
         
+        hints = []
+        
         for i in range(num_hints):
             hint = stdin.readline()
             hint = hint.rstrip().split("\t")
             hint.pop(0)
             hint = [int(hint[0]), int(hint[1]), hint[2]]
+            
+            hints += [hint]
 
             row = hint[0]
             col = hint[1]
 
             matrix[row][col] = hint[2]
+        
+        return Board(matrix, rows, columns, hints)
+
+    def post_parse(self):
+        """Preenche os valores adjacentes às peças com água."""
+        # preenchimento de água à volta da peça e possivel preenchimento de peça caso seja possível
+        
+        for hint in self.hints:
             
-            # preenchimento de água à volta da peça e possivel preenchimento de peça caso seja possível
-            
+            row = hint[0]
+            col = hint[1]
+        
             if hint[2] == TOP:
                 
-                matrix[row + 1][col] = UNDONE_BOAT
+                self.matrix[row + 1][col] = UNDONE_BOAT
                 
                 if row - 1 >= 0:
-                    matrix[row-1][col] = WATER
+                    self.matrix[row-1][col] = WATER
                 if col - 1 >= 0:
-                    matrix[row][col-1] = WATER
-                    matrix[row + 1][col-1] = WATER
+                    self.matrix[row][col-1] = WATER
+                    self.matrix[row + 1][col-1] = WATER
                     if row - 1 >= 0:
-                        matrix[row-1][col-1] = WATER
+                        self.matrix[row-1][col-1] = WATER
                     if row + 2 <= 9:
-                        matrix[row+2][col-1] = WATER
+                        self.matrix[row+2][col-1] = WATER
                 if col + 1 <= 9: 
-                    matrix[row][col+1] = WATER
-                    matrix[row + 1][col+1] = WATER
+                    self.matrix[row][col+1] = WATER
+                    self.matrix[row + 1][col+1] = WATER
                     if row - 1 >= 0:
-                        matrix[row-1][col+1] = WATER 
+                        self.matrix[row-1][col+1] = WATER 
                     if row + 2 <= 9:
-                        matrix[row+2][col+1] = WATER
+                        self.matrix[row+2][col+1] = WATER
                     
             if hint[2] == BOTTOM:
                 
-                matrix[row - 1][col] = UNDONE_BOAT
+                self.matrix[row - 1][col] = UNDONE_BOAT
                 
                 if row + 1 <= 9:
-                    matrix[row+1][col] = WATER
+                    self.matrix[row+1][col] = WATER
                 if col - 1 >= 0:
-                    matrix[row][col-1] = WATER
-                    matrix[row - 1][col-1] = WATER
+                    self.matrix[row][col-1] = WATER
+                    self.matrix[row - 1][col-1] = WATER
                     if row + 1 <= 9: 
-                        matrix[row+1][col-1] = WATER
+                        self.matrix[row+1][col-1] = WATER
                     if row - 2 >= 0:
-                        matrix[row-2][col-1] = WATER
+                        self.matrix[row-2][col-1] = WATER
                 if col + 1 <= 9:
-                    matrix[row][col+1] = WATER
-                    matrix[row - 1][col+1] = WATER
+                    self.matrix[row][col+1] = WATER
+                    self.matrix[row - 1][col+1] = WATER
                     if row + 1 <= 9:
-                        matrix[row+1][col+1] = WATER
+                        self.matrix[row+1][col+1] = WATER
                     if row - 2 >= 0:
-                        matrix[row-2][col+1] = WATER
+                        self.matrix[row-2][col+1] = WATER
                     
             if hint[2] == CIRCLE:
                 
                 if row - 1 >= 0:
-                    matrix[row-1][col] = WATER
+                    self.matrix[row-1][col] = WATER
                 if row + 1 <= 9:
-                    matrix[row+1][col] = WATER
+                    self.matrix[row+1][col] = WATER
                 if col - 1 >= 0:
-                    matrix[row][col-1] = WATER
+                    self.matrix[row][col-1] = WATER
                 if col + 1 <= 9:
-                    matrix[row][col+1] = WATER
+                    self.matrix[row][col+1] = WATER
                 if row - 1 >= 0 and col - 1 >= 0:
-                    matrix[row-1][col-1] = WATER
+                    self.matrix[row-1][col-1] = WATER
                 if row - 1 >= 0 and col + 1 <= 9:
-                    matrix[row-1][col+1] = WATER
+                    self.matrix[row-1][col+1] = WATER
                 if row + 1 <= 9 and col - 1 >= 0:
-                    matrix[row+1][col-1] = WATER
+                    self.matrix[row+1][col-1] = WATER
                 if row + 1 <= 9 and col + 1 <= 9:
-                    matrix[row+1][col+1] = WATER
+                    self.matrix[row+1][col+1] = WATER
                     
             if hint[2] == RIGHT:
                 
-                matrix[row][col - 1] = UNDONE_BOAT
+                self.matrix[row][col - 1] = UNDONE_BOAT
                 
                 if row - 1 >= 0:
-                    matrix[row-1][col] = WATER
-                    matrix[row-1][col - 1] = WATER
+                    self.matrix[row-1][col] = WATER
+                    self.matrix[row-1][col - 1] = WATER
                 if row + 1 <= 9:
-                    matrix[row+1][col] = WATER
-                    matrix[row+1][col - 1] = WATER
+                    self.matrix[row+1][col] = WATER
+                    self.matrix[row+1][col - 1] = WATER
                 if col + 1 <= 9:
-                    matrix[row][col+1] = WATER
+                    self.matrix[row][col+1] = WATER
                 if row - 1 >= 0 and col + 1 <= 9:
-                    matrix[row-1][col+1] = WATER
+                    self.matrix[row-1][col+1] = WATER
                 if row + 1 <= 9 and col + 1 <= 9:
-                    matrix[row+1][col+1] = WATER
+                    self.matrix[row+1][col+1] = WATER
                 if row - 1 >= 0 and col - 2 >= 0:
-                    matrix[row-1][col-2] = WATER
+                    self.matrix[row-1][col-2] = WATER
                 if row + 1 <= 9 and col - 2 >= 0:
-                    matrix[row+1][col-2] = WATER
+                    self.matrix[row+1][col-2] = WATER
                     
             if hint[2] == LEFT:
                 
-                matrix[row][col + 1] = UNDONE_BOAT
+                self.matrix[row][col + 1] = UNDONE_BOAT
                 
                 if row - 1 >= 0:
-                    matrix[row-1][col] = WATER
-                    matrix[row-1][col + 1] = WATER
+                    self.matrix[row-1][col] = WATER
+                    self.matrix[row-1][col + 1] = WATER
                 if row + 1 <= 9:
-                    matrix[row+1][col] = WATER
-                    matrix[row+1][col + 1] = WATER
+                    self.matrix[row+1][col] = WATER
+                    self.matrix[row+1][col + 1] = WATER
                 if col - 1 >= 0:
-                    matrix[row][col-1] = WATER
+                    self.matrix[row][col-1] = WATER
                 if row - 1 >= 0 and col - 1 >= 0:
-                    matrix[row-1][col-1] = WATER
+                    self.matrix[row-1][col-1] = WATER
                 if row + 1 <= 9 and col - 1 >= 0:
-                    matrix[row+1][col-1] = WATER
+                    self.matrix[row+1][col-1] = WATER
                 if row - 1 >= 0 and col + 2 <= 9:
-                    matrix[row-1][col+2] = WATER
+                    self.matrix[row-1][col+2] = WATER
                 if row + 1 <= 9 and col + 2 <= 9:
-                    matrix[row+1][col+2] = WATER
+                    self.matrix[row+1][col+2] = WATER
             
         # preenchimento de agua apos a colocacao de barcos e de mais barcos
             
         for i in range(0, 10):
-            if columns[i] == 0:
-                matrix[:,i] = WATER
-            column = matrix[:,i]
-            if np.count_nonzero((column == WATER) | (column == '.')) == 10 - columns[i]:
+            if self.columns[i] == 0:
+                self.matrix[:,i] = WATER
+            column = self.matrix[:,i]
+            non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == CIRCLE) | (column == UNDONE_BOAT))
+            print("non zeros for column {}: ".format(i), non_zeros)
+            if np.count_nonzero((column == ".") | (column == WATER)) == 10 - self.columns[i]:
                 for j in range(0, 10):
-                    if matrix[j][i] == '.':
-                        matrix[j][i] = WATER
-                    if matrix[j][i] == UNDONE_BOAT:
+                    if self.matrix[j][i] == '.':
+                        self.matrix[j][i] = WATER
+                    if self.matrix[j][i] == UNDONE_BOAT:
                         #TODO
                         pass
                 
         for i in range(0, 10):
-            if rows[i] == 0:
-                matrix[i] = WATER
-            row = matrix[i]
-            if np.count_nonzero((row == WATER) | (row == '.')) == 10 - rows[i]:
+            if self.rows[i] == 0:
+                self.matrix[i] = WATER
+            row = self.matrix[i]
+            non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == CIRCLE) | (row == UNDONE_BOAT))
+            print("non zeros for row {}: ".format(i), non_zeros)
+            if np.count_nonzero((row == ".") | (row == WATER)) == 10 - self.rows[i]:
                 for j in range(0, 10):
-                    if matrix[i][j] == '.':
-                        matrix[i][j] = WATER
-                    if matrix[i][j] == UNDONE_BOAT:
+                    if self.matrix[i][j] == '.':
+                        self.matrix[i][j] = WATER
+                    if self.matrix[i][j] == UNDONE_BOAT:
                         #TODO
                         pass
                     
-        # cenas extra
+        # IMPORTANT: cenas extra
         
         # for i in range(10):
         #     for j in range(10):
-        #         if np.count_nonzero((matrix[i] == WATER) | (matrix[i] == '.')) == 10 - rows[i]:
+        #         if np.count_nonzero((self.matrix[i] == WATER) | (matrix[i] == '.')) == 10 - rows[i]:
         #             for k in range(10):
         #                 if matrix[i][k] == '.':
         #                     matrix[i][k] = WATER
@@ -339,11 +357,7 @@ class Board:
         #                     if matrix[i][k] == '.':
         #                         matrix[i][k] = WATER
         
-        
-        
-        return Board(matrix, rows, columns)
-
-    # TODO: outros metodos da classe
+        return self
 
 
 class Bimaru(Problem):
@@ -376,6 +390,11 @@ class Bimaru(Problem):
     def actions(self, state: BimaruState):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
+        
+        # IMPORTANT:
+        
+        # formato da ação: (cell_1, cell_2, boat_size)
+        
         board = state.board
         actions = []
         for row in range(10):
@@ -401,7 +420,7 @@ class Bimaru(Problem):
         
         # action = (row, col, value)
         
-        if state.board.get_value(action[0], action[1]) != "." and state.board.get_value(action[0], action[1]) != WATER:
+        if state.board.get_value(action[0], action[1]) != None and state.board.get_value(action[0], action[1]) != WATER:
             return None
         else:
             state.board.matrix[action[0]][action[1]] = action[2]
@@ -430,6 +449,8 @@ class Bimaru(Problem):
 if __name__ == "__main__":
     
     board = Board.parse_instance()
+    
+    board = Board.post_parse(board)
     # Criar uma instância de Bimaru:
     problem = Bimaru(board)
     # Criar um estado com a configuração inicial:
@@ -440,3 +461,5 @@ if __name__ == "__main__":
     result_state = problem.result(initial_state, (3, 3, 'w'))
     # Mostrar valor na posição (3, 3):
     print(result_state.board.get_value(3, 3))
+    
+    print(result_state.board.print())
