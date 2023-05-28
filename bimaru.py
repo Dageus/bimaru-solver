@@ -399,18 +399,18 @@ class Board:
         for row in range(0, 10):
             for col in range(0, 10):
                 count = 1
-                if self.board[row][col] == TOP:
+                if self.matrix[row][col] == TOP:
                     for i in range(0, 10):
-                        if self.board[row + i][col] not in badbad:
+                        if self.matrix[row + i][col] not in badbad:
                             count += 1
-                        if self.board[row + i][col] == BOTTOM:
+                        if self.matrix[row + i][col] == BOTTOM:
                             boats[count] -= 1
                             break
-                elif self.board[row][col] == LEFT:
+                elif self.matrix[row][col] == LEFT:
                     for i in range(0, 10):
-                        if self.board[row][col + i] not in badbad:
+                        if self.matrix[row][col + i] not in badbad:
                             count += 1
-                        if self.board[row][col + i] == RIGHT:
+                        if self.matrix[row][col + i] == RIGHT:
                             boats[count] -= 1
                             break
         for i in range(4,0,-1):
@@ -431,7 +431,7 @@ class Bimaru(Problem):
         
         tuple_cells = self.board.adjacent_values(board, row, col)
 
-        if (self.board[row][col] = LEFT)
+        if self.board[row][col] == LEFT:
             if tuple_cells[0] == WATER and tuple_cells[1] == WATER and tuple_cells[2] == WATER and tuple_cells[3] == '.':
                 return True
         
