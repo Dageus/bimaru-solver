@@ -117,7 +117,7 @@ class Board:
     
     def print(self):
         """Imprime o tabuleiro."""
-        return print(self.__str__())
+        return self.__str__()
 
     @staticmethod
     def parse_instance():
@@ -356,7 +356,6 @@ class Bimaru(Problem):
         """Verifica se colocar uma parte de barco na vertical na posição dada é válido"""
 
         tuple_cells = self.board.adjacent_vertical_values(board, row, col)
-        
 
         if tuple_cells[0] == WATER and tuple_cells[1] == WATER:
             return True
@@ -368,7 +367,6 @@ class Bimaru(Problem):
         
         tuple_cells = self.board.adjacent_horizontal_values(board, row, col)
         
-        
         if tuple_cells[0] == WATER and tuple_cells[1] == WATER:
             return True
         
@@ -378,11 +376,13 @@ class Bimaru(Problem):
     def actions(self, state: BimaruState):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
-        # TODO
         board = state.board
         actions = []
-        for row in range(len(10)):
-            for col in range(len(10)):
+        for row in range(10):
+            for col in range(10):
+                if board.get_value(row, col) == BOAT:
+                    continue
+                
                 if board.get_value(row, col) == '.':
                     # ver se encaixa na vertical
                     if self.is_valid_vertical_action(board, row, col):
@@ -390,6 +390,7 @@ class Bimaru(Problem):
                     # ver se encaixa na horizontal
                     if self.is_valid_horizontal_action(board, row, col):
                         actions.append((row, col, HORIZONTAL))
+        
         return actions
 
     def result(self, state: BimaruState, action):
@@ -397,12 +398,10 @@ class Bimaru(Problem):
         'state' passado como argumento. A ação a executar deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state)."""
-        # TODO
-        # inicialmente assumimos que a ação é válida e preenche um espaço vazio
         
         # action = (row, col, value)
         
-        if state.board.get_value(action[0], action[1]) != ".":
+        if state.board.get_value(action[0], action[1]) != "." and state.board.get_value(action[0], action[1]) != WATER:
             return None
         else:
             state.board.matrix[action[0]][action[1]] = action[2]
@@ -413,30 +412,31 @@ class Bimaru(Problem):
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas de acordo com as regras do problema."""
         
+        matrix = state.board.matrix
+        
         for i in range(10):
             for j in range(10):
-                
                 pass
                     
+        return True
                 
 
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
         # TODO
         pass
-
-    # TODO: outros metodos da classe
     
 
 if __name__ == "__main__":
-    # TODO:
-    # Ler o ficheiro do standard input,
-    # Usar uma técnica de procura para resolver a instância,
-    # Retirar a solução a partir do nó resultante,
-    # Imprimir para o standard output no formato indicado.
     
     board = Board.parse_instance()
     # Criar uma instância de Bimaru:
     problem = Bimaru(board)
     # Criar um estado com a configuração inicial:
-    print(str(board))
+    initial_state = BimaruState(board)
+    # Mostrar valor na posição (3, 3):
+    print(initial_state.board.get_value(3, 3))
+    # Realizar acção de inserir o valor w (água) na posição da linha 3 e coluna 3
+    result_state = problem.result(initial_state, (3, 3, 'w'))
+    # Mostrar valor na posição (3, 3):
+    print(result_state.board.get_value(3, 3))
