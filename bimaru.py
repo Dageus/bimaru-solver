@@ -480,11 +480,15 @@ class Bimaru(Problem):
                     if count == boat_size:
                         actions.append((row, col, boat_size, 'horizontal'))
                         count = 0	
-
-
-
-                
-        
+        for col in range(10):
+            for row in range(10):
+                if(not is_valid_position(board, row, col)):
+                    count = 0
+                elif (is_valid_position(board, row, col)):
+                    count += 1
+                    if count == boat_size:
+                        actions.append((row, col, boat_size, 'vertical'))
+                        count = 0
         return actions
 
     def result(self, state: BimaruState, action):
