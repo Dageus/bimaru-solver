@@ -399,18 +399,18 @@ class Board:
         for row in range(0, 10):
             for col in range(0, 10):
                 count = 1
-                if self.board[row][col] == TOP:
+                if self.matrix[row][col] == TOP:
                     for i in range(0, 10):
-                        if self.board[row + i][col] not in badbad:
+                        if self.matrix[row + i][col] not in badbad:
                             count += 1
-                        if self.board[row + i][col] == BOTTOM:
+                        if self.matrix[row + i][col] == BOTTOM:
                             boats[count] -= 1
                             break
-                elif self.board[row][col] == LEFT:
+                elif self.matrix[row][col] == LEFT:
                     for i in range(0, 10):
-                        if self.board[row][col + i] not in badbad:
+                        if self.matrix[row][col + i] not in badbad:
                             count += 1
-                        if self.board[row][col + i] == RIGHT:
+                        if self.matrix[row][col + i] == RIGHT:
                             boats[count] -= 1
                             break
         for i in range(4,0,-1):
@@ -423,8 +423,6 @@ class Bimaru(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
         self.board = board
-        #TODO add more attributes
-
 
     def is_valid_position(self, board, row, col):
         """Verifica se colocar uma parte de barco na horizontal na posição dada é válido"""
@@ -459,8 +457,7 @@ class Bimaru(Problem):
 
         return False
 
-# (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
-    
+    # (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
 
     def actions(self, state: BimaruState):
         """Retorna uma lista de ações que podem ser executadas a
@@ -508,12 +505,12 @@ class Bimaru(Problem):
             column = state.board.matrix[:, action[1]]
             row = state.board.matrix[action[0]]
             
-            non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == UNDONE_BOAT))
+            non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == UNDONE_BOAT) | (column == MIDDLE))
             if len(non_zeros) == state.board.columns[action[1]]:
                 # a ideia aqui era ver se se pode retirar alguma das peças das que faltam completar, mas nao sei se esta certo
                 pass
                 
-            non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == UNDONE_BOAT))
+            non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == UNDONE_BOAT) | (row == MIDDLE))
             if len(non_zeros) == state.board.rows[action[0]]:
                 # a ideia aqui era ver se se pode retirar alguma das peças das que faltam completar, mas nao sei se esta certo
                 pass
@@ -526,6 +523,9 @@ class Bimaru(Problem):
         estão preenchidas de acordo com as regras do problema."""
         
         matrix = state.board.matrix
+        
+        if not np.any(state.board.pieces):
+            return False
         
         for i in range(10):
             for j in range(10):
