@@ -280,62 +280,64 @@ class Board:
                     if matrix[i][j] == UNDONE_BOAT:
                         #TODO
                         pass
+                    
+        # cenas extra
         
-        for i in range(10):
-            for j in range(10):
-                if np.count_nonzero((matrix[i] == WATER) | (matrix[i] == '.')) == 10 - rows[i]:
-                    for k in range(10):
-                        if matrix[i][k] == '.':
-                            matrix[i][k] = WATER
-                if np.count_nonzero((matrix[i] == WATER)) == 10 - rows[i]:
-                    for k in range(10):
-                        if matrix[i][k] == '.':
-                            matrix[i][k] = UNDONE_BOAT
-                if np.count_nonzero((matrix[:,i] == WATER)) == 10 - columns[i]:
-                    for k in range(10):
-                        if matrix[k][i] == '.':
-                            matrix[k][i] = UNDONE_BOAT
-                if np.count_nonzero((matrix[:,i] == WATER) | (matrix[:,i] == '.')) == 10 - columns[i]:
-                    for k in range(10):
-                        if matrix[k][i] == '.':
-                            matrix[k][i] = WATER
-                if matrix[i][j] == MIDDLE:
-                    adjacent_values = Board.adjacent_horizontal_values(matrix, i, j)
-                    if adjacent_values[0] != WATER and adjacent_values[1] != WATER:
-                        matrix[i][j - 1] = UNDONE_BOAT
-                        matrix[i][j + 1] = UNDONE_BOAT
-                        # preencher espaço à volta com água
-                        matrix[i - 1][j - 1] = WATER
-                        matrix[i - 1][j + 1] = WATER
-                        matrix[i + 1][j] = WATER
-                        matrix[i - 1][j] = WATER
-                        if i + 2 <= 9:
-                            matrix[i + 2][j + 1] = WATER
-                            matrix[i + 2][j - 1] = WATER
-                        if i - 2 >= 0:
-                            matrix[i - 2][j + 1] = WATER
-                            matrix[i - 2][j - 1] = WATER
-                    adjacent_values = Board.adjacent_vertical_values(matrix, i, j)
-                    if adjacent_values[0] != WATER and adjacent_values[1] != WATER:
-                        matrix[i - 1][j] = UNDONE_BOAT
-                        matrix[i + 1][j] = UNDONE_BOAT
-                        # preencher espaço à volta com água
-                        matrix[i - 1][j - 1] = WATER
-                        matrix[i - 1][j + 1] = WATER
-                        matrix[i][j + 1] = WATER
-                        matrix[i][j - 1] = WATER
-                        matrix[i + 1][j - 1] = WATER
-                        matrix[i + 1][j + 1] = WATER
-                        if i + 2 <= 9:
-                            matrix[i + 2][j + 1] = WATER
-                            matrix[i + 2][j - 1] = WATER
-                        if i - 2 >= 0:
-                            matrix[i - 2][j + 1] = WATER
-                            matrix[i - 2][j - 1] = WATER
-                    if np.count_nonzero((matrix[i] == WATER) | (matrix[i] == '.')) == 10 - rows[i]:
-                        for k in range(0, 10):
-                            if matrix[i][k] == '.':
-                                matrix[i][k] = WATER
+        # for i in range(10):
+        #     for j in range(10):
+        #         if np.count_nonzero((matrix[i] == WATER) | (matrix[i] == '.')) == 10 - rows[i]:
+        #             for k in range(10):
+        #                 if matrix[i][k] == '.':
+        #                     matrix[i][k] = WATER
+        #         if np.count_nonzero((matrix[i] == WATER)) == 10 - rows[i]:
+        #             for k in range(10):
+        #                 if matrix[i][k] == '.':
+        #                     matrix[i][k] = UNDONE_BOAT
+        #         if np.count_nonzero((matrix[:,i] == WATER)) == 10 - columns[i]:
+        #             for k in range(10):
+        #                 if matrix[k][i] == '.':
+        #                     matrix[k][i] = UNDONE_BOAT
+        #         if np.count_nonzero((matrix[:,i] == WATER) | (matrix[:,i] == '.')) == 10 - columns[i]:
+        #             for k in range(10):
+        #                 if matrix[k][i] == '.':
+        #                     matrix[k][i] = WATER
+        #         if matrix[i][j] == MIDDLE:
+        #             adjacent_values = Board.adjacent_horizontal_values(matrix, i, j)
+        #             if adjacent_values[0] != WATER and adjacent_values[1] != WATER:
+        #                 matrix[i][j - 1] = UNDONE_BOAT
+        #                 matrix[i][j + 1] = UNDONE_BOAT
+        #                 # preencher espaço à volta com água
+        #                 matrix[i - 1][j - 1] = WATER
+        #                 matrix[i - 1][j + 1] = WATER
+        #                 matrix[i + 1][j] = WATER
+        #                 matrix[i - 1][j] = WATER
+        #                 if i + 2 <= 9:
+        #                     matrix[i + 2][j + 1] = WATER
+        #                     matrix[i + 2][j - 1] = WATER
+        #                 if i - 2 >= 0:
+        #                     matrix[i - 2][j + 1] = WATER
+        #                     matrix[i - 2][j - 1] = WATER
+        #             adjacent_values = Board.adjacent_vertical_values(matrix, i, j)
+        #             if adjacent_values[0] != WATER and adjacent_values[1] != WATER:
+        #                 matrix[i - 1][j] = UNDONE_BOAT
+        #                 matrix[i + 1][j] = UNDONE_BOAT
+        #                 # preencher espaço à volta com água
+        #                 matrix[i - 1][j - 1] = WATER
+        #                 matrix[i - 1][j + 1] = WATER
+        #                 matrix[i][j + 1] = WATER
+        #                 matrix[i][j - 1] = WATER
+        #                 matrix[i + 1][j - 1] = WATER
+        #                 matrix[i + 1][j + 1] = WATER
+        #                 if i + 2 <= 9:
+        #                     matrix[i + 2][j + 1] = WATER
+        #                     matrix[i + 2][j - 1] = WATER
+        #                 if i - 2 >= 0:
+        #                     matrix[i - 2][j + 1] = WATER
+        #                     matrix[i - 2][j - 1] = WATER
+        #             if np.count_nonzero((matrix[i] == WATER) | (matrix[i] == '.')) == 10 - rows[i]:
+        #                 for k in range(0, 10):
+        #                     if matrix[i][k] == '.':
+        #                         matrix[i][k] = WATER
         
         
         
