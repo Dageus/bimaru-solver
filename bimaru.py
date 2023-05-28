@@ -158,7 +158,7 @@ class Board:
         e retorna uma instância da classe Board.
         """
         
-        matrix = np.full((10, 10), ".")
+        matrix = np.full((10, 10), "!")
         
         rows = stdin.readline()
         rows = rows.rstrip().split("\t")
@@ -203,130 +203,130 @@ class Board:
                 self.matrix[row + 1][col] = UNDONE_BOAT
                 
                 if row - 1 >= 0:
-                    self.matrix[row-1][col] = WATER
+                    self.matrix[row-1][col] = '.'
                 if col - 1 >= 0:
-                    self.matrix[row][col-1] = WATER
-                    self.matrix[row + 1][col-1] = WATER
+                    self.matrix[row][col-1] = '.'
+                    self.matrix[row + 1][col-1] = '.'
                     if row - 1 >= 0:
-                        self.matrix[row-1][col-1] = WATER
+                        self.matrix[row-1][col-1] = '.'
                     if row + 2 <= 9:
-                        self.matrix[row+2][col-1] = WATER
+                        self.matrix[row+2][col-1] = '.'
                 if col + 1 <= 9: 
-                    self.matrix[row][col+1] = WATER
-                    self.matrix[row + 1][col+1] = WATER
+                    self.matrix[row][col+1] = '.'
+                    self.matrix[row + 1][col+1] = '.'
                     if row - 1 >= 0:
-                        self.matrix[row-1][col+1] = WATER 
+                        self.matrix[row-1][col+1] = '.' 
                     if row + 2 <= 9:
-                        self.matrix[row+2][col+1] = WATER
+                        self.matrix[row+2][col+1] = '.'
                     
             if hint[2] == BOTTOM:
                 
                 self.matrix[row - 1][col] = UNDONE_BOAT
                 
                 if row + 1 <= 9:
-                    self.matrix[row+1][col] = WATER
+                    self.matrix[row+1][col] = '.'
                 if col - 1 >= 0:
-                    self.matrix[row][col-1] = WATER
-                    self.matrix[row - 1][col-1] = WATER
+                    self.matrix[row][col-1] = '.'
+                    self.matrix[row - 1][col-1] = '.'
                     if row + 1 <= 9: 
-                        self.matrix[row+1][col-1] = WATER
+                        self.matrix[row+1][col-1] = '.'
                     if row - 2 >= 0:
-                        self.matrix[row-2][col-1] = WATER
+                        self.matrix[row-2][col-1] = '.'
                 if col + 1 <= 9:
-                    self.matrix[row][col+1] = WATER
-                    self.matrix[row - 1][col+1] = WATER
+                    self.matrix[row][col+1] = '.'
+                    self.matrix[row - 1][col+1] = '.'
                     if row + 1 <= 9:
-                        self.matrix[row+1][col+1] = WATER
+                        self.matrix[row+1][col+1] = '.'
                     if row - 2 >= 0:
-                        self.matrix[row-2][col+1] = WATER
+                        self.matrix[row-2][col+1] = '.'
                     
             if hint[2] == CIRCLE:
                 
                 if row - 1 >= 0:
-                    self.matrix[row-1][col] = WATER
+                    self.matrix[row-1][col] = '.'
                 if row + 1 <= 9:
-                    self.matrix[row+1][col] = WATER
+                    self.matrix[row+1][col] = '.'
                 if col - 1 >= 0:
-                    self.matrix[row][col-1] = WATER
+                    self.matrix[row][col-1] = '.'
                 if col + 1 <= 9:
-                    self.matrix[row][col+1] = WATER
+                    self.matrix[row][col+1] = '.'
                 if row - 1 >= 0 and col - 1 >= 0:
-                    self.matrix[row-1][col-1] = WATER
+                    self.matrix[row-1][col-1] = '.'
                 if row - 1 >= 0 and col + 1 <= 9:
-                    self.matrix[row-1][col+1] = WATER
+                    self.matrix[row-1][col+1] = '.'
                 if row + 1 <= 9 and col - 1 >= 0:
-                    self.matrix[row+1][col-1] = WATER
+                    self.matrix[row+1][col-1] = '.'
                 if row + 1 <= 9 and col + 1 <= 9:
-                    self.matrix[row+1][col+1] = WATER
+                    self.matrix[row+1][col+1] = '.'
                     
             if hint[2] == RIGHT:
                 
                 self.matrix[row][col - 1] = UNDONE_BOAT
                 
                 if row - 1 >= 0:
-                    self.matrix[row-1][col] = WATER
-                    self.matrix[row-1][col - 1] = WATER
+                    self.matrix[row-1][col] = '.'
+                    self.matrix[row-1][col - 1] = '.'
                 if row + 1 <= 9:
-                    self.matrix[row+1][col] = WATER
-                    self.matrix[row+1][col - 1] = WATER
+                    self.matrix[row+1][col] = '.'
+                    self.matrix[row+1][col - 1] = '.'
                 if col + 1 <= 9:
-                    self.matrix[row][col+1] = WATER
+                    self.matrix[row][col+1] = '.'
                 if row - 1 >= 0 and col + 1 <= 9:
-                    self.matrix[row-1][col+1] = WATER
+                    self.matrix[row-1][col+1] = '.'
                 if row + 1 <= 9 and col + 1 <= 9:
-                    self.matrix[row+1][col+1] = WATER
+                    self.matrix[row+1][col+1] = '.'
                 if row - 1 >= 0 and col - 2 >= 0:
-                    self.matrix[row-1][col-2] = WATER
+                    self.matrix[row-1][col-2] = '.'
                 if row + 1 <= 9 and col - 2 >= 0:
-                    self.matrix[row+1][col-2] = WATER
+                    self.matrix[row+1][col-2] = '.'
                     
             if hint[2] == LEFT:
                 
                 self.matrix[row][col + 1] = UNDONE_BOAT
                 
                 if row - 1 >= 0:
-                    self.matrix[row-1][col] = WATER
-                    self.matrix[row-1][col + 1] = WATER
+                    self.matrix[row-1][col] = '.'
+                    self.matrix[row-1][col + 1] = '.'
                 if row + 1 <= 9:
-                    self.matrix[row+1][col] = WATER
-                    self.matrix[row+1][col + 1] = WATER
+                    self.matrix[row+1][col] = '.'
+                    self.matrix[row+1][col + 1] = '.'
                 if col - 1 >= 0:
-                    self.matrix[row][col-1] = WATER
+                    self.matrix[row][col-1] = '.'
                 if row - 1 >= 0 and col - 1 >= 0:
-                    self.matrix[row-1][col-1] = WATER
+                    self.matrix[row-1][col-1] = '.'
                 if row + 1 <= 9 and col - 1 >= 0:
-                    self.matrix[row+1][col-1] = WATER
+                    self.matrix[row+1][col-1] = '.'
                 if row - 1 >= 0 and col + 2 <= 9:
-                    self.matrix[row-1][col+2] = WATER
+                    self.matrix[row-1][col+2] = '.'
                 if row + 1 <= 9 and col + 2 <= 9:
-                    self.matrix[row+1][col+2] = WATER
+                    self.matrix[row+1][col+2] = '.'
             
         # preenchimento de agua apos a colocacao de barcos e de mais barcos
             
         for i in range(0, 10):
             if self.columns[i] == 0:
-                self.matrix[:,i] = WATER
+                self.matrix[:,i] = '.'
             column = self.matrix[:,i]
             non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == CIRCLE) | (column == UNDONE_BOAT))
             print("non zeros for column {}: ".format(i), non_zeros)
             if np.count_nonzero((column == ".") | (column == WATER)) == 10 - self.columns[i]:
                 for j in range(0, 10):
                     if self.matrix[j][i] == '.':
-                        self.matrix[j][i] = WATER
+                        self.matrix[j][i] = '.'
                     if self.matrix[j][i] == UNDONE_BOAT:
                         #TODO
                         pass
                 
         for i in range(0, 10):
             if self.rows[i] == 0:
-                self.matrix[i] = WATER
+                self.matrix[i] = '.'
             row = self.matrix[i]
             non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == CIRCLE) | (row == UNDONE_BOAT))
             print("non zeros for row {}: ".format(i), non_zeros)
             if np.count_nonzero((row == ".") | (row == WATER)) == 10 - self.rows[i]:
                 for j in range(0, 10):
                     if self.matrix[i][j] == '.':
-                        self.matrix[i][j] = WATER
+                        self.matrix[i][j] = '.'
                     if self.matrix[i][j] == UNDONE_BOAT:
                         #TODO
                         pass
@@ -428,16 +428,35 @@ class Bimaru(Problem):
 
     def is_valid_position(self, board, row, col):
         """Verifica se colocar uma parte de barco na horizontal na posição dada é válido"""
-        
+        if board[row][col] == WATER or board[row][col] == '.':
+            return False
+
         tuple_cells = self.board.adjacent_values(board, row, col)
 
-        if (self.board[row][col] = LEFT)
-            if tuple_cells[0] == WATER and tuple_cells[1] == WATER and tuple_cells[2] == WATER and tuple_cells[3] == '.':
+        if (self.board[row][col] == LEFT):
+            if  tuple_cells[3] == '!' or tuple_cells[3] == MIDDLE :
                 return True
         
-        if tuple_cells[0] == WATER and tuple_cells[1] == WATER:
-            return True
+        if (self.board[row][col] == MIDDLE):
+            if   tuple_cells[0] == TOP and tuple_cells[1] == '!' or \ 
+            tuple_cells[0] == MIDDLE and tuple_cells[1] == '!' or \
+            tuple_cells[1] == BOTTOM and tuple_cells[0] == '!' or \
+            tuple_cells[1] == MIDDLE and tuple_cells[0] == '!' or \
+            tuple_cells[2] == MIDDLE and tuple_cells[3] == '!' or \
+            tuple_cells[2] == LEFT and tuple_cells[3] == '!' or \
+            tuple_cells[3] == RIGHT and tuple_cells[2] == '!' or \
+            tuple_cells[3] == MIDDLE and tuple_cells[2] == '!' or \
+            tuple_cells[0] == '!' and tuple_cells[1] == '!' or \
+            tuple_cells[2] == '!' and tuple_cells[3] == '!':
+
+
+                return True
         
+        if (self.board[row][col] == TOP):   
+            if  tuple_cells[1] == '!' or tuple_cells[1] == MIDDLE :
+                return True
+
+
         return False
 
 # (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
@@ -457,8 +476,13 @@ class Bimaru(Problem):
         count = 0
         for row in range(10):
             for col in range(10):
-                if (is_valid_position(board, row, col)):
+                if(not is_valid_position(board, row, col)):
+                    count = 0
+                elif (is_valid_position(board, row, col)):
                     count += 1
+                    if count == boat_size:
+                        actions.append((row, col, boat_size, 'horizontal'))
+                        count = 0	
 
 
 
