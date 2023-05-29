@@ -84,7 +84,6 @@ class Board:
         if self.matrix[row+1][col] == "." or row + 1 > 9:
             cell2 = None
         return cell1, cell2
-    
 
     def adjacent_horizontal_values(self, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente à esquerda e à direita,
@@ -417,8 +416,6 @@ class Board:
                         if i - 2 >= 0:
                             self.matrix[i - 2][middle_index + 1] = WATER
                             self.matrix[i - 2][middle_index - 1] = WATER
-                            
-            print(self.matrix, "\nvs.\n", copy)
             
             stop = True #np.array_equal(copy, self.matrix)
         
@@ -489,6 +486,10 @@ class Bimaru(Problem):
                     return False
                 
             if (self.board[row][col + boat_size - 1] == RIGHT):
+                if self.board.adjacent_vertical_values(row, col + boat_size - 1)[0]  not in (WATER, HINT_WATER, EMPTY_SPACE):
+                    return False
+                if self.board.adjacent_vertical_values(row, col + boat_size - 1)[1]  not in (WATER, HINT_WATER, EMPTY_SPACE):
+                    return False
                 count += 1
             elif (self.board[row][col + boat_size - 1] == EMPTY_SPACE):
                 if self.board.columns[col + boat_size - 1] < 1:
@@ -497,28 +498,28 @@ class Bimaru(Problem):
             if self.board.rows[row] < boat_size - count:
                 return False 
 
-        if (self.board[row][col] == LEFT):
-            if  tuple_cells[3] == EMPTY_SPACE or tuple_cells[3] == MIDDLE :
-                return True
+    #     if (self.board[row][col] == LEFT):
+    #         if  tuple_cells[3] == EMPTY_SPACE or tuple_cells[3] == MIDDLE :
+    #             return True
         
-    # (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
+    # # (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
     
-        if (self.board[row][col] == MIDDLE):
-            if (tuple_cells[0] == TOP and tuple_cells[1] == EMPTY_SPACE) or \
-            (tuple_cells[0] == MIDDLE and tuple_cells[1] == EMPTY_SPACE) or \
-            (tuple_cells[1] == BOTTOM and tuple_cells[0] == EMPTY_SPACE) or \
-            (tuple_cells[1] == MIDDLE and tuple_cells[0] == EMPTY_SPACE) or \
-            (tuple_cells[2] == MIDDLE and tuple_cells[3] == EMPTY_SPACE) or \
-            (tuple_cells[2] == LEFT and tuple_cells[3] == EMPTY_SPACE) or \
-            (tuple_cells[3] == RIGHT and tuple_cells[2] == EMPTY_SPACE) or \
-            (tuple_cells[3] == MIDDLE and tuple_cells[2] == EMPTY_SPACE) or \
-            (tuple_cells[0] == EMPTY_SPACE and tuple_cells[1] == EMPTY_SPACE) or \
-            (tuple_cells[2] == EMPTY_SPACE and tuple_cells[3] == EMPTY_SPACE):
-                return True
+    #     if (self.board[row][col] == MIDDLE):
+    #         if (tuple_cells[0] == TOP and tuple_cells[1] == EMPTY_SPACE) or \
+    #         (tuple_cells[0] == MIDDLE and tuple_cells[1] == EMPTY_SPACE) or \
+    #         (tuple_cells[1] == BOTTOM and tuple_cells[0] == EMPTY_SPACE) or \
+    #         (tuple_cells[1] == MIDDLE and tuple_cells[0] == EMPTY_SPACE) or \
+    #         (tuple_cells[2] == MIDDLE and tuple_cells[3] == EMPTY_SPACE) or \
+    #         (tuple_cells[2] == LEFT and tuple_cells[3] == EMPTY_SPACE) or \
+    #         (tuple_cells[3] == RIGHT and tuple_cells[2] == EMPTY_SPACE) or \
+    #         (tuple_cells[3] == MIDDLE and tuple_cells[2] == EMPTY_SPACE) or \
+    #         (tuple_cells[0] == EMPTY_SPACE and tuple_cells[1] == EMPTY_SPACE) or \
+    #         (tuple_cells[2] == EMPTY_SPACE and tuple_cells[3] == EMPTY_SPACE):
+    #             return True
         
-        if (self.board[row][col] == TOP):   
-            if  tuple_cells[1] == EMPTY_SPACE or tuple_cells[1] == MIDDLE :
-                return True
+    #     if (self.board[row][col] == TOP):   
+    #         if  tuple_cells[1] == EMPTY_SPACE or tuple_cells[1] == MIDDLE :
+    #             return True
 
 
         return False
