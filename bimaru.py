@@ -424,7 +424,7 @@ class Bimaru(Problem):
         """O construtor especifica o estado inicial."""
         self.board = board
 
-    def is_valid_position(self, board, row, col):
+    def is_valid_position(self, row, col):
         """Verifica se colocar uma parte de barco na horizontal na posição dada é válido"""
         if board[row][col] == WATER or board[row][col] == '.':
             return False
@@ -436,7 +436,7 @@ class Bimaru(Problem):
                 return True
         
         if (self.board[row][col] == MIDDLE):
-            if   tuple_cells[0] == TOP and tuple_cells[1] == '!' or \ 
+            if tuple_cells[0] == TOP and tuple_cells[1] == '!' or \
             tuple_cells[0] == MIDDLE and tuple_cells[1] == '!' or \
             tuple_cells[1] == BOTTOM and tuple_cells[0] == '!' or \
             tuple_cells[1] == MIDDLE and tuple_cells[0] == '!' or \
@@ -446,8 +446,6 @@ class Bimaru(Problem):
             tuple_cells[3] == MIDDLE and tuple_cells[2] == '!' or \
             tuple_cells[0] == '!' and tuple_cells[1] == '!' or \
             tuple_cells[2] == '!' and tuple_cells[3] == '!':
-
-
                 return True
         
         if (self.board[row][col] == TOP):   
