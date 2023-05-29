@@ -25,6 +25,7 @@ PIECES = [  4 ,  3 ,  2 ,  1  ]
 
 import sys
 from sys import stdin
+import copy
 import numpy as np
 from search import (
     Problem,
@@ -90,9 +91,9 @@ class Board:
         respectivamente."""
         cell1 = self.matrix[row][col-1]
         cell2 = self.matrix[row][col+1]
-        if self.matrix[row][col-1] == "." or col - 1 < 0:
+        if self.matrix[row][col-1] == EMPTY_SPACE or col - 1 < 0:
             cell1 = None
-        if self.matrix[row][col+1] == "." or col + 1 > 9:
+        if self.matrix[row][col+1] == EMPTY_SPACE or col + 1 > 9:
             cell2 = None
         return cell1, cell2
 
@@ -163,10 +164,18 @@ class Board:
         rows.pop(0)
         rows = [int(i) for i in rows]
         
+        print("rows: ", rows)
+        
+        ROWS = rows
+        
         columns = stdin.readline()
         columns = columns.rstrip().split("\t")
         columns.pop(0)
         columns = [int(i) for i in columns]
+        
+        print("columns: ", columns)
+        
+        COLUMNS = columns
         
         num_hints = int(stdin.readline())
         
@@ -187,8 +196,9 @@ class Board:
             
             # retirar 1 ao valor da linha e da coluna
             
-            rows[row] -= 1
-            columns[col] -= 1
+            if hint[2] != HINT_WATER:
+                rows[row] -= 1
+                columns[col] -= 1
         
         return Board(matrix, rows, columns, hints)
 
@@ -206,7 +216,7 @@ class Board:
                 
                 # retirar 1 ao valor da linha e da coluna
                 
-                self.rows[row] -= 1
+                self.rows[row + 1] -= 1
                 self.columns[col] -= 1
                 
                 if row - 1 >= 0:
@@ -327,41 +337,25 @@ class Board:
           
         stop = False
         
-        print(self.print())
-        
         while not stop:
             
             copy = np.copy(self.matrix)
             
             for i in range(10):
-                if self.columns[i] == 0:
-                    for j in range(10):
-                        if self.matrix[j][i] == EMPTY_SPACE:
-                            self.matrix[j][i] = WATER
-                        if self.matrix[j][i] == UNDONE_BOAT:
-                            #TODO
-                            pass
                 column = self.matrix[:,i]
-                non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == CIRCLE) | (column == UNDONE_BOAT))
-                if non_zeros[0].size == self.columns[i]:
+                non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == CIRCLE) | (column == UNDONE_BOAT) | (column == LEFT) | (column == RIGHT))
+                print("column {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", COLUMNS[i])
+                if non_zeros[0].size == COLUMNS[i]:
                     for j in range(0, 10):
                         if self.matrix[j][i] == EMPTY_SPACE:
                             self.matrix[j][i] = WATER
                         if self.matrix[j][i] == UNDONE_BOAT:
                             #TODO
                             pass
-                    
-            for i in range(10):
-                if self.rows[i] == 0:
-                    for j in range(10):
-                        if self.matrix[i][j] == EMPTY_SPACE:
-                            self.matrix[i][j] = WATER
-                        if self.matrix[i][j] == UNDONE_BOAT:
-                            #TODO
-                            pass
                 row = self.matrix[i]
-                non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == CIRCLE) | (row == UNDONE_BOAT))
-                if non_zeros[0].size == self.rows[i]:
+                non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == CIRCLE) | (row == UNDONE_BOAT) | (row == TOP) | (row == BOTTOM))
+                print("row {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", ROWS[i])
+                if non_zeros[0].size == ROWS[i]:
                     for j in range(0, 10):
                         if self.matrix[i][j] == EMPTY_SPACE:
                             self.matrix[i][j] = WATER
@@ -372,12 +366,12 @@ class Board:
             
             for i in range(10):
                 # verificar linhas
-                if np.count_nonzero((self.matrix[i] == WATER) | (self.matrix[i] == EMPTY_SPACE) | (self.matrix[i] == HINT_WATER)) == 10 - self.rows[i]:
+                if np.count_nonzero((self.matrix[i] == WATER) | (self.matrix[i] == EMPTY_SPACE) | (self.matrix[i] == HINT_WATER)) == 10 - ROWS[i]:
                     for k in range(10):
                         if self.matrix[i][k] == EMPTY_SPACE:
                             self.matrix[i][k] = WATER
                 # verificar colunas              
-                if np.count_nonzero((self.matrix[:,i] == WATER) | (self.matrix[:,i] == EMPTY_SPACE) | (self.matrix[:,i] == HINT_WATER)) == 10 - self.columns[i]:
+                if np.count_nonzero((self.matrix[:,i] == WATER) | (self.matrix[:,i] == EMPTY_SPACE) | (self.matrix[:,i] == HINT_WATER)) == 10 - COLUMNS[i]:
                     for k in range(10):
                         if self.matrix[k][i] == EMPTY_SPACE:
                             self.matrix[k][i] = WATER
@@ -392,6 +386,13 @@ class Board:
                         # preencher em cada lado com uma peça de um barco
                         self.matrix[i][middle_index - 1] = UNDONE_BOAT
                         self.matrix[i][middle_index + 1] = UNDONE_BOAT
+                        
+                        # retirar 1 ao valor da linha e da coluna
+                        
+                        self.rows[i] -= 2
+                        self.columns[middle_index - 1] -= 1
+                        self.columns[middle_index + 1] -= 1
+                        
                         # preencher espaço à volta com água
                         self.matrix[i - 1][middle_index - 1] = WATER
                         self.matrix[i - 1][middle_index + 1] = WATER
@@ -414,6 +415,13 @@ class Board:
                         # preencher em cima e em baixo com a peça de um barco
                         self.matrix[i - 1][middle_index] = UNDONE_BOAT
                         self.matrix[i + 1][middle_index] = UNDONE_BOAT
+                        
+                        # retirar 1 ao valor da linha e da coluna
+                        
+                        self.rows[i - 1] -= 1
+                        self.rows[i + 1] -= 1
+                        self.columns[middle_index] -= 2
+                        
                         # preencher espaço à volta com água
                         self.matrix[i - 1][middle_index - 1] = WATER
                         self.matrix[i - 1][middle_index + 1] = WATER
@@ -647,6 +655,8 @@ class Bimaru(Problem):
 if __name__ == "__main__":
     
     board = Board.parse_instance()
+    
+    print(board.print())
     
     board = Board.post_parse(board)
     # Criar uma instância de Bimaru:
