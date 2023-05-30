@@ -25,7 +25,6 @@ PIECES = [  4 ,  3 ,  2 ,  1  ]
 
 import sys
 from sys import stdin
-import copy
 import numpy as np
 from search import (
     Problem,
@@ -57,13 +56,15 @@ class Board:
     
     """Representação interna de um tabuleiro de Bimaru.""" 
     
-    def __init__(self, matrix, rows, columns, hints):
+    def __init__(self, matrix, rows, columns, unaltered_rows, unaltered_columns, hints):
         """Construtor da classe. Recebe como argumentos uma matriz que representa
         o tabuleiro, uma lista com os espaços preenchidos nas linhas, uma lista
         com os espaços preenchidos nas colunas e uma lista com o número de peças"""
         self.matrix = matrix
         self.rows = rows
         self.columns = columns
+        self.unaltered_rows = unaltered_rows
+        self.unaltered_columns = unaltered_columns
         self.hints = hints
         self.pieces = PIECES
 
@@ -166,7 +167,7 @@ class Board:
         
         print("rows: ", rows)
         
-        ROWS = rows
+        unaltered_rows = rows[:]
         
         columns = stdin.readline()
         columns = columns.rstrip().split("\t")
@@ -175,7 +176,7 @@ class Board:
         
         print("columns: ", columns)
         
-        COLUMNS = columns
+        unaltered_columns = columns[:]
         
         num_hints = int(stdin.readline())
         
@@ -200,7 +201,7 @@ class Board:
                 rows[row] -= 1
                 columns[col] -= 1
         
-        return Board(matrix, rows, columns, hints)
+        return Board(matrix, rows, columns, unaltered_rows, unaltered_columns, hints)
 
     def post_parse(self):
         """Preenche os valores adjacentes às peças com água."""
@@ -344,8 +345,8 @@ class Board:
             for i in range(10):
                 column = self.matrix[:,i]
                 non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == CIRCLE) | (column == UNDONE_BOAT) | (column == LEFT) | (column == RIGHT))
-                print("column {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", COLUMNS[i])
-                if non_zeros[0].size == COLUMNS[i]:
+                print("column {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", self.unaltered_columns[i])
+                if non_zeros[0].size == self.unaltered_columns[i]:
                     for j in range(0, 10):
                         if self.matrix[j][i] == EMPTY_SPACE:
                             self.matrix[j][i] = WATER
@@ -354,8 +355,8 @@ class Board:
                             pass
                 row = self.matrix[i]
                 non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == CIRCLE) | (row == UNDONE_BOAT) | (row == TOP) | (row == BOTTOM))
-                print("row {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", ROWS[i])
-                if non_zeros[0].size == ROWS[i]:
+                print("row {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", self.unaltered_rows[i])
+                if non_zeros[0].size == self.unaltered_rows[i]:
                     for j in range(0, 10):
                         if self.matrix[i][j] == EMPTY_SPACE:
                             self.matrix[i][j] = WATER
@@ -366,12 +367,12 @@ class Board:
             
             for i in range(10):
                 # verificar linhas
-                if np.count_nonzero((self.matrix[i] == WATER) | (self.matrix[i] == EMPTY_SPACE) | (self.matrix[i] == HINT_WATER)) == 10 - ROWS[i]:
+                if np.count_nonzero((self.matrix[i] == WATER) | (self.matrix[i] == EMPTY_SPACE) | (self.matrix[i] == HINT_WATER)) == 10 - self.rows[i]:
                     for k in range(10):
                         if self.matrix[i][k] == EMPTY_SPACE:
                             self.matrix[i][k] = WATER
                 # verificar colunas              
-                if np.count_nonzero((self.matrix[:,i] == WATER) | (self.matrix[:,i] == EMPTY_SPACE) | (self.matrix[:,i] == HINT_WATER)) == 10 - COLUMNS[i]:
+                if np.count_nonzero((self.matrix[:,i] == WATER) | (self.matrix[:,i] == EMPTY_SPACE) | (self.matrix[:,i] == HINT_WATER)) == 10 - self.columns[i]:
                     for k in range(10):
                         if self.matrix[k][i] == EMPTY_SPACE:
                             self.matrix[k][i] = WATER
