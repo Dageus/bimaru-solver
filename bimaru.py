@@ -492,25 +492,25 @@ class Bimaru(Problem):
         """Verifica se colocar uma parte de barco na horizontal na posição dada é válido"""
         count = 0
          
-        if (orientation == HORIZONTAL):
-            if (self.board[row][col] == LEFT):
+        if orientation == HORIZONTAL:
+            if self.board[row][col] == LEFT:
                 tuple_adjacent_b = self.board.adjacent_vertical_values(row, col)
                 for i in range(8):
                     if i != 3 and i != 5 and i != 6:
                         if tuple_adjacent_b[i] not in (WATER, HINT_WATER, EMPTY_SPACE):
                             return False
                 count += 1
-            elif (self.board[row][col] == EMPTY_SPACE):
+            elif self.board[row][col] == EMPTY_SPACE:
                 if self.board.columns[col] < 1:
                     return False
             else:
                 return False
                 
-            for i in range(col +_1, col + boat_size - 1):
-                if (self.board[row][i] == EMPTY_SPACE):
+            for i in range(col + 1, col + boat_size - 1):
+                if self.board[row][i] == EMPTY_SPACE:
                     if self.board.columns[i] < 1:
                         return False
-                elif (self.board[row][i] == MIDDLE):
+                elif self.board[row][i] == MIDDLE:
                     count += 1
                 else:
                     return False
@@ -519,14 +519,14 @@ class Bimaru(Problem):
                 if self.board.adjacent_vertical_values(row, i)[1]  not in (WATER, HINT_WATER, EMPTY_SPACE):
                     return False
                 
-            if (self.board[row][col + boat_size - 1] == RIGHT):
+            if self.board[row][col + boat_size - 1] == RIGHT:
                 tuple_adjacent_e = self.board.adjacent_vertical_values(row, col + boat_size - 1)
                 for i in range(8):
                     if i != 2 and i != 4 and i != 7:
                         if tuple_adjacent_e[i] not in (WATER, HINT_WATER, EMPTY_SPACE):
                             return False
                 count += 1
-            elif (self.board[row][col + boat_size - 1] == EMPTY_SPACE):
+            elif self.board[row][col + boat_size - 1] == EMPTY_SPACE:
                 if self.board.columns[col + boat_size - 1] < 1:
                     return False
                 
@@ -536,24 +536,24 @@ class Bimaru(Problem):
     # # (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
     
         elif orientation == VERTICAL:
-            if (self.board[row][col] == TOP):
+            if self.board[row][col] == TOP:
                 tuple_adjacent_b = self.board.adjacent_vertical_values(row, col)
                 for i in range(8):
                     if i != 1 and i != 5 and i != 7:
                         if tuple_adjacent_b[i] not in (WATER, HINT_WATER, EMPTY_SPACE):
                             return False
                 count += 1
-            elif (self.board[row][col] == EMPTY_SPACE):
+            elif self.board[row][col] == EMPTY_SPACE:
                 if self.board.rows[row] < 1:
                     return False
             else:
                 return False
                 
             for i in range(row + 1, row + boat_size - 1):
-                if (self.board[i][col] == EMPTY_SPACE):
+                if self.board[i][col] == EMPTY_SPACE:
                     if self.board.rows[i] < 1:
                         return False
-                elif (self.board[i][col] == MIDDLE):
+                elif self.board[i][col] == MIDDLE:
                     count += 1
                 else:
                     return False
@@ -562,14 +562,14 @@ class Bimaru(Problem):
                 if self.board.adjacent_horizontal_values(i, col)[1]  not in (WATER, HINT_WATER, EMPTY_SPACE):
                     return False
                 
-            if (self.board[row + boat_size - 1][col] == BOTTOM):
+            if self.board[row + boat_size - 1][col] == BOTTOM:
                 tuple_adjacent_e = self.board.adjacent_vertical_values(row + boat_size - 1, col)
                 for i in range(8):
                     if i != 0 and i != 4 and i != 6:
                         if tuple_adjacent_e[i] not in (WATER, HINT_WATER, EMPTY_SPACE):
                             return False
                 count += 1
-            elif (self.board[row + boat_size - 1][col] == EMPTY_SPACE):
+            elif self.board[row + boat_size - 1][col] == EMPTY_SPACE:
                 if self.board.rows[row + boat_size - 1] < 1:
                     return False
                 
@@ -637,15 +637,15 @@ class Bimaru(Problem):
         
         # action = (row, col, boat_size, orientation)
         
-        if(action[2] == 1):
+        if action[2] == 1:
             self.board.matrix[action[0]][action[1]] = CIRCLE
-        elif(action[3] == HORIZONTAL):
+        elif action[3] == HORIZONTAL:
             self.board.matrix[action[0]][action[1]] = LEFT
             for col in range(action[1], action[1] + action[2] - 1):
                 self.board.matrix[action[0]][col] = MIDDLE
             self.board.matrix[action[0]][action[1] + action[2] - 1] = RIGHT
         
-        elif(action[3] == VERTICAL):
+        elif action[3] == VERTICAL:
             self.board.matrix[action[0]][action[1]] = TOP
             for row in range(action[0], action[0] + action[2] - 1):
                 self.board.matrix[row][action[1]] = MIDDLE
