@@ -37,21 +37,6 @@ from search import (
 )
 
 
-class BimaruState:
-    
-    state_id = 0
-
-    def __init__(self, board):
-        self.board = board
-        self.id = BimaruState.state_id
-        BimaruState.state_id += 1
-
-    def __lt__(self, other):
-        return self.id < other.id
-
-    # TODO: outros metodos da classe
-
-
 class Board:
     
     """Representação interna de um tabuleiro de Bimaru.""" 
@@ -202,9 +187,11 @@ class Board:
                 columns[col] -= 1
         
         return Board(matrix, rows, columns, unaltered_rows, unaltered_columns, hints)
-
+    
     def post_parse(self):
-        """Preenche os valores adjacentes às peças com água."""
+        """
+        Colocar águas e barcos em volta dos hints caso seja possivel.
+        """
         
         for hint in self.hints:
             
@@ -333,114 +320,7 @@ class Board:
                     self.matrix[row-1][col+2] = WATER
                 if row + 1 <= 9 and col + 2 <= 9:
                     self.matrix[row+1][col+2] = WATER
-            
-        # preenchimento de agua apos a colocacao de barcos e de mais barcos
-          
-        stop = False
-        
-        while not stop:
-            
-            copy = np.copy(self.matrix)
-            
-            for i in range(10):
-                column = self.matrix[:,i]
-                non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == CIRCLE) | (column == UNDONE_BOAT) | (column == LEFT) | (column == RIGHT))
-                print("column {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", self.unaltered_columns[i])
-                if non_zeros[0].size == self.unaltered_columns[i]:
-                    for j in range(0, 10):
-                        if self.matrix[j][i] == EMPTY_SPACE:
-                            self.matrix[j][i] = WATER
-                        if self.matrix[j][i] == UNDONE_BOAT:
-                            #TODO
-                            pass
-                row = self.matrix[i]
-                non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == CIRCLE) | (row == UNDONE_BOAT) | (row == TOP) | (row == BOTTOM))
-                print("row {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", self.unaltered_rows[i])
-                if non_zeros[0].size == self.unaltered_rows[i]:
-                    for j in range(0, 10):
-                        if self.matrix[i][j] == EMPTY_SPACE:
-                            self.matrix[i][j] = WATER
-                        if self.matrix[i][j] == UNDONE_BOAT:
-                            #TODO
-                            pass
-            
-            
-            for i in range(10):
-                # verificar linhas
-                if np.count_nonzero((self.matrix[i] == WATER) | (self.matrix[i] == EMPTY_SPACE) | (self.matrix[i] == HINT_WATER)) == 10 - self.rows[i]:
-                    for k in range(10):
-                        if self.matrix[i][k] == EMPTY_SPACE:
-                            self.matrix[i][k] = WATER
-                # verificar colunas              
-                if np.count_nonzero((self.matrix[:,i] == WATER) | (self.matrix[:,i] == EMPTY_SPACE) | (self.matrix[:,i] == HINT_WATER)) == 10 - self.columns[i]:
-                    for k in range(10):
-                        if self.matrix[k][i] == EMPTY_SPACE:
-                            self.matrix[k][i] = WATER
-                middle_index = np.nonzero((self.matrix[i] == MIDDLE))
-                if middle_index[0].size > 0:
-                    middle_index = middle_index[0][0]
-                    
-                    # verificar horizontalmente
-                    
-                    adjacent_values = self.adjacent_horizontal_values(i, middle_index)
-                    if adjacent_values[0] != WATER and adjacent_values[1] != WATER:
-                        # preencher em cada lado com uma peça de um barco
-                        self.matrix[i][middle_index - 1] = UNDONE_BOAT
-                        self.matrix[i][middle_index + 1] = UNDONE_BOAT
-                        
-                        # retirar 1 ao valor da linha e da coluna
-                        
-                        self.rows[i] -= 2
-                        self.columns[middle_index - 1] -= 1
-                        self.columns[middle_index + 1] -= 1
-                        
-                        # preencher espaço à volta com água
-                        self.matrix[i - 1][middle_index - 1] = WATER
-                        self.matrix[i - 1][middle_index + 1] = WATER
-                        self.matrix[i + 1][middle_index] = WATER
-                        self.matrix[i - 1][middle_index] = WATER
-                        self.matrix[i + 1][middle_index + 1] = WATER
-                        self.matrix[i + 1][middle_index - 1] = WATER
-                        # verificar se há espaço extra para as bordas do barco
-                        if i + 2 <= 9:
-                            self.matrix[i + 2][middle_index + 1] = WATER
-                            self.matrix[i + 2][middle_index - 1] = WATER
-                        if i - 2 >= 0:
-                            self.matrix[i - 2][middle_index + 1] = WATER
-                            self.matrix[i - 2][middle_index - 1] = WATER
-                    
-                    # verificar verticalmente
-                            
-                    adjacent_values = self.adjacent_vertical_values(i, middle_index)
-                    if adjacent_values[0] != WATER and adjacent_values[1] != WATER:
-                        # preencher em cima e em baixo com a peça de um barco
-                        self.matrix[i - 1][middle_index] = UNDONE_BOAT
-                        self.matrix[i + 1][middle_index] = UNDONE_BOAT
-                        
-                        # retirar 1 ao valor da linha e da coluna
-                        
-                        self.rows[i - 1] -= 1
-                        self.rows[i + 1] -= 1
-                        self.columns[middle_index] -= 2
-                        
-                        # preencher espaço à volta com água
-                        self.matrix[i - 1][middle_index - 1] = WATER
-                        self.matrix[i - 1][middle_index + 1] = WATER
-                        self.matrix[i][middle_index + 1] = WATER
-                        self.matrix[i][middle_index - 1] = WATER
-                        self.matrix[i + 1][middle_index - 1] = WATER
-                        self.matrix[i + 1][middle_index + 1] = WATER
-                        # verificar se há espaço extra para as bordas do barco
-                        if i + 2 <= 9:
-                            self.matrix[i + 2][middle_index + 1] = WATER
-                            self.matrix[i + 2][middle_index - 1] = WATER
-                        if i - 2 >= 0:
-                            self.matrix[i - 2][middle_index + 1] = WATER
-                            self.matrix[i - 2][middle_index - 1] = WATER
-            
-            stop = True #np.array_equal(copy, self.matrix)
-        
-        return self
+
 
 
     def count_boats(self):
@@ -468,6 +348,139 @@ class Board:
             if boats[i] != 0:
                 return i
         return 0
+
+
+class BimaruState:
+    
+    state_id = 0
+
+    def __init__(self, board: Board):
+        self.board = board
+        self.id = BimaruState.state_id
+        BimaruState.state_id += 1
+        self.check_up()
+        
+    def check_up(self):
+        """Preenche os valores adjacentes às peças com água."""
+        # preenchimento de agua apos a colocacao de barcos e de mais barcos
+          
+        stop = False
+        
+        while not stop:
+            
+            copy = np.copy(self.board.matrix)
+            
+            for i in range(10):
+                column = self.board.matrix[:,i]
+                non_zeros = np.nonzero((column == TOP) | (column == BOTTOM) | (column == CIRCLE) | (column == UNDONE_BOAT) | (column == LEFT) | (column == RIGHT))
+                print("column {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", self.board.unaltered_columns[i])
+                if non_zeros[0].size == self.board.unaltered_columns[i]:
+                    for j in range(0, 10):
+                        if self.board.matrix[j][i] == EMPTY_SPACE:
+                            self.board.matrix[j][i] = WATER
+                        if self.board.matrix[j][i] == UNDONE_BOAT:
+                            #TODO
+                            pass
+                row = self.board.matrix[i]
+                non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == CIRCLE) | (row == UNDONE_BOAT) | (row == TOP) | (row == BOTTOM))
+                print("row {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", self.board.unaltered_rows[i])
+                if non_zeros[0].size == self.board.unaltered_rows[i]:
+                    for j in range(0, 10):
+                        if self.board.matrix[i][j] == EMPTY_SPACE:
+                            self.board.matrix[i][j] = WATER
+                        if self.board.matrix[i][j] == UNDONE_BOAT:
+                            #TODO
+                            pass
+            
+            
+            for i in range(10):
+                # verificar linhas
+                if np.count_nonzero((self.board.matrix[i] == WATER) | (self.board.matrix[i] == EMPTY_SPACE) | (self.board.matrix[i] == HINT_WATER)) == 10 - self.board.rows[i]:
+                    for k in range(10):
+                        if self.board.matrix[i][k] == EMPTY_SPACE:
+                            self.board.matrix[i][k] = WATER
+                # verificar colunas              
+                if np.count_nonzero((self.board.matrix[:,i] == WATER) | (self.board.matrix[:,i] == EMPTY_SPACE) | (self.board.matrix[:,i] == HINT_WATER)) == 10 - self.board.columns[i]:
+                    for k in range(10):
+                        if self.board.matrix[k][i] == EMPTY_SPACE:
+                            self.board.matrix[k][i] = WATER
+                middle_index = np.nonzero((self.board.matrix[i] == MIDDLE))
+                if middle_index[0].size > 0:
+                    middle_index = middle_index[0][0]
+                    
+                    # verificar horizontalmente
+                    
+                    adjacent_values_vertical = self.board.adjacent_vertical_values(i, middle_index)
+                    adjacent_values_horizontal = self.board.adjacent_horizontal_values(i, middle_index)
+                    if (adjacent_values_horizontal[0] == WATER or adjacent_values_horizontal[1] == WATER)\
+                        and (adjacent_values_vertical[0] != UNDONE_BOAT and adjacent_values_vertical[1] != UNDONE_BOAT):
+                        print("horizontal")
+                        # preencher em cada lado com uma peça de um barco
+                        self.board.matrix[i][middle_index - 1] = UNDONE_BOAT
+                        self.board.matrix[i][middle_index + 1] = UNDONE_BOAT
+                        
+                        # retirar 1 ao valor da linha e da coluna
+                        
+                        self.board.rows[i] -= 2
+                        self.board.columns[middle_index - 1] -= 1
+                        self.board.columns[middle_index + 1] -= 1
+                        
+                        # preencher espaço à volta com água
+                        self.board.matrix[i - 1][middle_index - 1] = WATER
+                        self.board.matrix[i - 1][middle_index + 1] = WATER
+                        self.board.matrix[i + 1][middle_index] = WATER
+                        self.board.matrix[i - 1][middle_index] = WATER
+                        self.board.matrix[i + 1][middle_index + 1] = WATER
+                        self.board.matrix[i + 1][middle_index - 1] = WATER
+                        # verificar se há espaço extra para as bordas do barco
+                        if i + 2 <= 9:
+                            self.board.matrix[i + 2][middle_index + 1] = WATER
+                            self.board.matrix[i + 2][middle_index - 1] = WATER
+                        if i - 2 >= 0:
+                            self.board.matrix[i - 2][middle_index + 1] = WATER
+                            self.board.matrix[i - 2][middle_index - 1] = WATER
+                    
+                    # verificar verticalmente
+                            
+                    if (adjacent_values_horizontal[0] == WATER or adjacent_values_horizontal[1] == WATER)\
+                        and (adjacent_values_vertical[0] == UNDONE_BOAT or adjacent_values_vertical[1] == UNDONE_BOAT):
+                        print("vertical")
+                        # preencher em cima e em baixo com a peça de um barco
+                        self.board.matrix[i - 1][middle_index] = UNDONE_BOAT
+                        self.board.matrix[i + 1][middle_index] = UNDONE_BOAT
+                        
+                        # retirar 1 ao valor da linha e da coluna
+                        
+                        self.board.rows[i - 1] -= 1
+                        self.board.rows[i + 1] -= 1
+                        self.board.columns[middle_index] -= 2
+                        
+                        # preencher espaço à volta com água
+                        self.board.matrix[i - 1][middle_index - 1] = WATER
+                        self.board.matrix[i - 1][middle_index + 1] = WATER
+                        self.board.matrix[i][middle_index + 1] = WATER
+                        self.board.matrix[i][middle_index - 1] = WATER
+                        self.board.matrix[i + 1][middle_index - 1] = WATER
+                        self.board.matrix[i + 1][middle_index + 1] = WATER
+                        # verificar se há espaço extra para as bordas do barco
+                        if i + 2 <= 9:
+                            self.board.matrix[i + 2][middle_index + 1] = WATER
+                            self.board.matrix[i + 2][middle_index - 1] = WATER
+                        if i - 2 >= 0:
+                            self.board.matrix[i - 2][middle_index + 1] = WATER
+                            self.board.matrix[i - 2][middle_index - 1] = WATER
+                            
+                                        
+            stop = np.array_equal(copy, self.board.matrix)
+            
+            print("--------------------")
+        
+        return self
+
+    def __lt__(self, other):
+        return self.id < other.id
+
+    # TODO: outros metodos da classe
 
 
 class Bimaru(Problem):
@@ -589,6 +602,12 @@ class Bimaru(Problem):
         
         # IMPORTANT:
         
+        # ver linhas e colunas com baixo numero
+        
+        # ou 
+        
+        # ver como meter maior barco possivel
+        
         # formato da ação: (cell_1, cell_2, boat_size, orientação)
         
         board = state.board
@@ -650,6 +669,9 @@ class Bimaru(Problem):
 
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
+        
+        # usar heuristica consistente
+        
         return -node.depth*2
     
 
@@ -659,7 +681,9 @@ if __name__ == "__main__":
     
     print(board.print())
     
-    board = Board.post_parse(board)
+    Board.post_parse(board)
+    
+    print(board.print())
     # Criar uma instância de Bimaru:
     problem = Bimaru(board)
     # Criar um estado com a configuração inicial:

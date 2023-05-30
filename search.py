@@ -827,7 +827,8 @@ class OnlineSearchProblem(Problem):
     """
     A problem which is solved by an agent executing
     actions, rather than by just computation.
-    Carried in a deterministic and a fully observable environment."""
+    Carried in a deterministic and a fully observable environment.
+    """
 
     def __init__(self, initial, goal, graph):
         super().__init__(initial, goal)
