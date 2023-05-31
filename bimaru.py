@@ -6,22 +6,22 @@
 # 103808 João Miguel Nogueira
 # 103465 João Rocha
 
-HINT_WATER = "W"
-WATER   = "."
+HINT_WATER  = "W"
+WATER       = "."
 EMPTY_SPACE = "!"
 UNDONE_BOAT = "1"
-CIRCLE  = "C"
-TOP     = "T"
-MIDDLE  = "M"
-BOTTOM  = "B"
-LEFT    = "L"
-RIGHT   = "R"
+CIRCLE      = "C"
+TOP         = "T"
+MIDDLE      = "M"
+BOTTOM      = "B"
+LEFT        = "L"
+RIGHT       = "R"
 
-HORIZONTAL = 0
-VERTICAL = 1
+HORIZONTAL  = 0
+VERTICAL    = 1
 
 #          1x1  2x1  3x1  4x1
-PIECES = [  4 ,  3 ,  2 ,  1  ]
+PIECES      = [  4 ,  3 ,  2 ,  1  ]
 
 import sys
 from sys import stdin
