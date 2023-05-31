@@ -58,9 +58,7 @@ class Board:
         if self.matrix[row][col] == ".":
             return None
         return self.matrix[row][col]
-    
-    #TODO adjacent values parra ate 4 para verificar se 2 hints formam o mm barco
-        
+            
     def adjacent_vertical_values(self, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente acima e abaixo,
         respectivamente."""
@@ -114,7 +112,6 @@ class Board:
         self.adjacent_diagonal1_values(row, col) + \
         self.adjacent_diagonal2_values(row, col)
 
-        
     def __str__(self):
         """Devolve uma string que representa o tabuleiro."""
         
@@ -340,7 +337,28 @@ class Board:
                     if row + 1 <= 9 and col + 2 <= 9:
                         self.matrix[row+1][col+2] = WATER
 
-
+    def has_neighbour(self, row, col, type):
+        """
+        Verifica se uma dada posição tem um vizinho que o completa
+        """
+        
+        if type == TOP:
+            
+            pass
+        
+        elif type == BOTTOM:
+            
+            pass
+        
+        elif type == RIGHT:
+            
+            pass
+        
+        elif type == LEFT:
+            
+            pass
+        
+        return 
 
     def count_boats(self):
         """Retorna o maior barco que ainda não foi colocado"""
