@@ -511,8 +511,57 @@ class BimaruState:
 
     def __lt__(self, other):
         return self.id < other.id
+    
+    def is_submarine(self, row, col):
+        """Verifica se a posição é um submarino"""
+        tuple_sub = self.board[row][col].adajacent_values()
+        for value in tuple_sub:
+            if value == WATER or value == HINT_WATER:
+                return False
+        return True
+        
 
-    # TODO: outros metodos da classe
+    def complete_boat(self, board: Board):
+        """Completa um barco"""
+        for row in range(10):
+            for col in range(10):
+                if self.board[row][col] == LEFT:
+                    count = 1
+                    while count < 5 or self.board[row][col] != WATER or \
+                                          self.board[row][col] != HINT_WATER:
+                        col += 1
+                        self.board[row][col] = MIDDLE
+                        count += 1
+                    self.board[row][col] = RIGHT
+                elif self.board[row][col] == TOP:
+                    count = 1
+                    while count < 5 or self.board[row][col] != WATER or \
+                                         self.board[row][col] != HINT_WATER:
+                        row += 1
+                        self.board[row][col] = MIDDLE
+                        count += 1
+                    self.board[row][col] = BOTTOM
+                elif self.board[row][col] == UNDONE_BOAT and \
+                    self.board[row][col].is_submarine(self, row, col):
+                    self.board[row][col] = CIRCLE
+                elif self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == UNDONE_BOAT:
+                    self.board[row][col] = LEFT
+                    while (self.board[row][col] != WATER or self.board[row][col] != HINT_WATER) or \
+                          self.board[row][col] != RIGHT:
+                        col += 1
+                        self.board[row][col] = MIDDLE
+                    if  self.board[row][col] != RIGHT:
+                        self.board[row][col] = RIGHT
+                elif self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == UNDONE_BOAT:
+                    self.board[row][col] = TOP
+                    while (self.board[row][col] != WATER or self.board[row][col] != HINT_WATER) or \
+                          self.board[row][col] != BOTTOM:
+                        row += 1
+                        self.board[row][col] = MIDDLE
+                    if  self.board[row][col] != BOTTOM:
+                        self.board[row][col] = BOTTOM
+                
+        return board
 
 
 class Bimaru(Problem):
