@@ -150,16 +150,12 @@ class Board:
         rows.pop(0)
         rows = [int(i) for i in rows]
         
-        print("rows: ", rows)
-        
         unaltered_rows = rows[:]
         
         columns = stdin.readline()
         columns = columns.rstrip().split("\t")
         columns.pop(0)
         columns = [int(i) for i in columns]
-        
-        print("columns: ", columns)
         
         unaltered_columns = columns[:]
         
@@ -177,14 +173,15 @@ class Board:
 
             row = hint[0]
             col = hint[1]
-
-            matrix[row][col] = hint[2]
             
             # retirar 1 ao valor da linha e da coluna
             
             if hint[2] != HINT_WATER:
+                matrix[row][col] = hint[2]
                 rows[row] -= 1
                 columns[col] -= 1
+            else:
+                matrix[row][col] = WATER
         
         return Board(matrix, rows, columns, unaltered_rows, unaltered_columns, hints)
     
@@ -200,55 +197,67 @@ class Board:
         
             if hint[2] == TOP:
                 
-                self.matrix[row + 1][col] = UNDONE_BOAT
                 
-                # retirar 1 ao valor da linha e da coluna
-                
-                self.rows[row + 1] -= 1
-                self.columns[col] -= 1
-                
-                if row - 1 >= 0:
-                    self.matrix[row-1][col] = WATER
-                if col - 1 >= 0:
-                    self.matrix[row][col-1] = WATER
-                    self.matrix[row + 1][col-1] = WATER
+                if self.has_neighbour(row, col, TOP):
+                    # TODO
+                    pass
+                else:
+                    
+                    self.matrix[row + 1][col] = UNDONE_BOAT
+                    
+                    # retirar 1 ao valor da linha e da coluna
+                    
+                    self.rows[row + 1] -= 1
+                    self.columns[col] -= 1
+                    
                     if row - 1 >= 0:
-                        self.matrix[row-1][col-1] = WATER
-                    if row + 2 <= 9:
-                        self.matrix[row+2][col-1] = WATER
-                if col + 1 <= 9: 
-                    self.matrix[row][col+1] = WATER
-                    self.matrix[row + 1][col+1] = WATER
-                    if row - 1 >= 0:
-                        self.matrix[row-1][col+1] = WATER 
-                    if row + 2 <= 9:
-                        self.matrix[row+2][col+1] = WATER
+                        self.matrix[row-1][col] = WATER
+                    if col - 1 >= 0:
+                        self.matrix[row][col-1] = WATER
+                        self.matrix[row + 1][col-1] = WATER
+                        if row - 1 >= 0:
+                            self.matrix[row-1][col-1] = WATER
+                        if row + 2 <= 9:
+                            self.matrix[row+2][col-1] = WATER
+                    if col + 1 <= 9: 
+                        self.matrix[row][col+1] = WATER
+                        self.matrix[row + 1][col+1] = WATER
+                        if row - 1 >= 0:
+                            self.matrix[row-1][col+1] = WATER 
+                        if row + 2 <= 9:
+                            self.matrix[row+2][col+1] = WATER
                     
             if hint[2] == BOTTOM:
                 
-                self.matrix[row - 1][col] = UNDONE_BOAT
                 
-                # retirar 1 ao valor da linha e da coluna
+                if self.has_neighbour(row, col, BOTTOM):
+                    # TODO
+                    pass
+                else:
                 
-                self.rows[row - 1] -= 1
-                self.columns[col] -= 1
-                
-                if row + 1 <= 9:
-                    self.matrix[row+1][col] = WATER
-                if col - 1 >= 0:
-                    self.matrix[row][col-1] = WATER
-                    self.matrix[row - 1][col-1] = WATER
-                    if row + 1 <= 9: 
-                        self.matrix[row+1][col-1] = WATER
-                    if row - 2 >= 0:
-                        self.matrix[row-2][col-1] = WATER
-                if col + 1 <= 9:
-                    self.matrix[row][col+1] = WATER
-                    self.matrix[row - 1][col+1] = WATER
+                    self.matrix[row - 1][col] = UNDONE_BOAT
+                    
+                    # retirar 1 ao valor da linha e da coluna
+                    
+                    self.rows[row - 1] -= 1
+                    self.columns[col] -= 1
+                    
                     if row + 1 <= 9:
-                        self.matrix[row+1][col+1] = WATER
-                    if row - 2 >= 0:
-                        self.matrix[row-2][col+1] = WATER
+                        self.matrix[row+1][col] = WATER
+                    if col - 1 >= 0:
+                        self.matrix[row][col-1] = WATER
+                        self.matrix[row - 1][col-1] = WATER
+                        if row + 1 <= 9: 
+                            self.matrix[row+1][col-1] = WATER
+                        if row - 2 >= 0:
+                            self.matrix[row-2][col-1] = WATER
+                    if col + 1 <= 9:
+                        self.matrix[row][col+1] = WATER
+                        self.matrix[row - 1][col+1] = WATER
+                        if row + 1 <= 9:
+                            self.matrix[row+1][col+1] = WATER
+                        if row - 2 >= 0:
+                            self.matrix[row-2][col+1] = WATER
                     
             if hint[2] == CIRCLE:
                 
@@ -271,55 +280,65 @@ class Board:
                     
             if hint[2] == RIGHT:
                 
-                self.matrix[row][col - 1] = UNDONE_BOAT
+                if self.has_neighbour(row, col, RIGHT):
+                    # TODO
+                    pass
+                else:
                 
-                # retirar 1 ao valor da linha e da coluna
-                
-                self.rows[row] -= 1
-                self.columns[col] -= 1
-                
-                if row - 1 >= 0:
-                    self.matrix[row-1][col] = WATER
-                    self.matrix[row-1][col - 1] = WATER
-                if row + 1 <= 9:
-                    self.matrix[row+1][col] = WATER
-                    self.matrix[row+1][col - 1] = WATER
-                if col + 1 <= 9:
-                    self.matrix[row][col+1] = WATER
-                if row - 1 >= 0 and col + 1 <= 9:
-                    self.matrix[row-1][col+1] = WATER
-                if row + 1 <= 9 and col + 1 <= 9:
-                    self.matrix[row+1][col+1] = WATER
-                if row - 1 >= 0 and col - 2 >= 0:
-                    self.matrix[row-1][col-2] = WATER
-                if row + 1 <= 9 and col - 2 >= 0:
-                    self.matrix[row+1][col-2] = WATER
+                    self.matrix[row][col - 1] = UNDONE_BOAT
+                    
+                    # retirar 1 ao valor da linha e da coluna
+                    
+                    self.rows[row] -= 1
+                    self.columns[col] -= 1
+                    
+                    if row - 1 >= 0:
+                        self.matrix[row-1][col] = WATER
+                        self.matrix[row-1][col - 1] = WATER
+                    if row + 1 <= 9:
+                        self.matrix[row+1][col] = WATER
+                        self.matrix[row+1][col - 1] = WATER
+                    if col + 1 <= 9:
+                        self.matrix[row][col+1] = WATER
+                    if row - 1 >= 0 and col + 1 <= 9:
+                        self.matrix[row-1][col+1] = WATER
+                    if row + 1 <= 9 and col + 1 <= 9:
+                        self.matrix[row+1][col+1] = WATER
+                    if row - 1 >= 0 and col - 2 >= 0:
+                        self.matrix[row-1][col-2] = WATER
+                    if row + 1 <= 9 and col - 2 >= 0:
+                        self.matrix[row+1][col-2] = WATER
                     
             if hint[2] == LEFT:
                 
-                self.matrix[row][col + 1] = UNDONE_BOAT
+                if self.has_neighbour(row, col, LEFT):
+                    # TODO
+                    pass
+                else:
                 
-                # retirar 1 ao valor da linha e da coluna
-                
-                self.rows[row] -= 1
-                self.columns[col] -= 1
-                
-                if row - 1 >= 0:
-                    self.matrix[row-1][col] = WATER
-                    self.matrix[row-1][col + 1] = WATER
-                if row + 1 <= 9:
-                    self.matrix[row+1][col] = WATER
-                    self.matrix[row+1][col + 1] = WATER
-                if col - 1 >= 0:
-                    self.matrix[row][col-1] = WATER
-                if row - 1 >= 0 and col - 1 >= 0:
-                    self.matrix[row-1][col-1] = WATER
-                if row + 1 <= 9 and col - 1 >= 0:
-                    self.matrix[row+1][col-1] = WATER
-                if row - 1 >= 0 and col + 2 <= 9:
-                    self.matrix[row-1][col+2] = WATER
-                if row + 1 <= 9 and col + 2 <= 9:
-                    self.matrix[row+1][col+2] = WATER
+                    self.matrix[row][col + 1] = UNDONE_BOAT
+                    
+                    # retirar 1 ao valor da linha e da coluna
+                    
+                    self.rows[row] -= 1
+                    self.columns[col] -= 1
+                    
+                    if row - 1 >= 0:
+                        self.matrix[row-1][col] = WATER
+                        self.matrix[row-1][col + 1] = WATER
+                    if row + 1 <= 9:
+                        self.matrix[row+1][col] = WATER
+                        self.matrix[row+1][col + 1] = WATER
+                    if col - 1 >= 0:
+                        self.matrix[row][col-1] = WATER
+                    if row - 1 >= 0 and col - 1 >= 0:
+                        self.matrix[row-1][col-1] = WATER
+                    if row + 1 <= 9 and col - 1 >= 0:
+                        self.matrix[row+1][col-1] = WATER
+                    if row - 1 >= 0 and col + 2 <= 9:
+                        self.matrix[row-1][col+2] = WATER
+                    if row + 1 <= 9 and col + 2 <= 9:
+                        self.matrix[row+1][col+2] = WATER
 
 
 
@@ -400,7 +419,7 @@ class BimaruState:
                 # verificar se se pode preencher os espaços vazios com agua
                 
                 # verificar linhas
-                non_zeros = np.nonzero((self.board.matrix[i] == WATER) | (self.board.matrix[i] == HINT_WATER))
+                non_zeros = np.nonzero((self.board.matrix[i] == WATER))
                 size = non_zeros[0].size
                 print("linha {} non zeros len: ".format(i) + str(size), "vs. ", self.board.rows[i])
                 if size == 10 - self.board.unaltered_rows[i]:
@@ -415,7 +434,7 @@ class BimaruState:
                             self.board.columns[k] -= 1
                 
                 # verificar colunas         
-                non_zeros = np.nonzero((self.board.matrix[:,i] == WATER) | (self.board.matrix[:,i] == HINT_WATER))
+                non_zeros = np.nonzero((self.board.matrix[:,i] == WATER))
                 size = non_zeros[0].size
                 print("coluna {} non zeros len: ".format(i) + str(size), "vs. ", self.board.columns[i])
                 if size == 10 - self.board.unaltered_columns[i]:
@@ -508,15 +527,12 @@ class BimaruState:
             print(self.board.print())
         
         return self
-
-    def __lt__(self, other):
-        return self.id < other.id
     
     def is_submarine(self, row, col):
         """Verifica se a posição é um submarino"""
         tuple_sub = self.board[row][col].adajacent_values()
         for value in tuple_sub:
-            if value == WATER or value == HINT_WATER:
+            if value == WATER:
                 return False
         return True
         
@@ -527,16 +543,14 @@ class BimaruState:
             for col in range(10):
                 if self.board[row][col] == LEFT:
                     count = 1
-                    while count < 5 or self.board[row][col] != WATER or \
-                                          self.board[row][col] != HINT_WATER:
+                    while count < 5 or self.board[row][col] != WATER:
                         col += 1
                         self.board[row][col] = MIDDLE
                         count += 1
                     self.board[row][col] = RIGHT
                 elif self.board[row][col] == TOP:
                     count = 1
-                    while count < 5 or self.board[row][col] != WATER or \
-                                         self.board[row][col] != HINT_WATER:
+                    while count < 5 or self.board[row][col] != WATER:
                         row += 1
                         self.board[row][col] = MIDDLE
                         count += 1
@@ -546,22 +560,23 @@ class BimaruState:
                     self.board[row][col] = CIRCLE
                 elif self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == UNDONE_BOAT:
                     self.board[row][col] = LEFT
-                    while (self.board[row][col] != WATER or self.board[row][col] != HINT_WATER) or \
-                          self.board[row][col] != RIGHT:
+                    while self.board[row][col] != WATER or self.board[row][col] != RIGHT:
                         col += 1
                         self.board[row][col] = MIDDLE
-                    if  self.board[row][col] != RIGHT:
+                    if self.board[row][col] != RIGHT:
                         self.board[row][col] = RIGHT
                 elif self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == UNDONE_BOAT:
                     self.board[row][col] = TOP
-                    while (self.board[row][col] != WATER or self.board[row][col] != HINT_WATER) or \
-                          self.board[row][col] != BOTTOM:
+                    while self.board[row][col] != WATER or self.board[row][col] != BOTTOM:
                         row += 1
                         self.board[row][col] = MIDDLE
-                    if  self.board[row][col] != BOTTOM:
+                    if self.board[row][col] != BOTTOM:
                         self.board[row][col] = BOTTOM
                 
         return board
+    
+    def __lt__(self, other):
+        return self.id < other.id
 
 
 class Bimaru(Problem):
@@ -578,7 +593,7 @@ class Bimaru(Problem):
                 tuple_adjacent_b = self.board.adjacent_vertical_values(row, col)
                 for i in range(8):
                     if i != 3 and i != 5 and i != 6:
-                        if tuple_adjacent_b[i] not in (WATER, HINT_WATER, EMPTY_SPACE):
+                        if tuple_adjacent_b[i] not in (WATER, EMPTY_SPACE):
                             return False
                 count += 1
             elif self.board[row][col] == EMPTY_SPACE:
@@ -595,16 +610,16 @@ class Bimaru(Problem):
                     count += 1
                 else:
                     return False
-                if self.board.adjacent_vertical_values(row, i)[0]  not in (WATER, HINT_WATER, EMPTY_SPACE):
+                if self.board.adjacent_vertical_values(row, i)[0]  not in (WATER, EMPTY_SPACE):
                     return False
-                if self.board.adjacent_vertical_values(row, i)[1]  not in (WATER, HINT_WATER, EMPTY_SPACE):
+                if self.board.adjacent_vertical_values(row, i)[1]  not in (WATER, EMPTY_SPACE):
                     return False
                 
             if self.board[row][col + boat_size - 1] == RIGHT:
                 tuple_adjacent_e = self.board.adjacent_vertical_values(row, col + boat_size - 1)
                 for i in range(8):
                     if i != 2 and i != 4 and i != 7:
-                        if tuple_adjacent_e[i] not in (WATER, HINT_WATER, EMPTY_SPACE):
+                        if tuple_adjacent_e[i] not in (WATER, EMPTY_SPACE):
                             return False
                 count += 1
             elif self.board[row][col + boat_size - 1] == EMPTY_SPACE:
@@ -621,7 +636,7 @@ class Bimaru(Problem):
                 tuple_adjacent_b = self.board.adjacent_vertical_values(row, col)
                 for i in range(8):
                     if i != 1 and i != 5 and i != 7:
-                        if tuple_adjacent_b[i] not in (WATER, HINT_WATER, EMPTY_SPACE):
+                        if tuple_adjacent_b[i] not in (WATER, EMPTY_SPACE):
                             return False
                 count += 1
             elif self.board[row][col] == EMPTY_SPACE:
@@ -638,16 +653,16 @@ class Bimaru(Problem):
                     count += 1
                 else:
                     return False
-                if self.board.adjacent_horizontal_values(i, col)[0]  not in (WATER, HINT_WATER, EMPTY_SPACE):
+                if self.board.adjacent_horizontal_values(i, col)[0]  not in (WATER, EMPTY_SPACE):
                     return False
-                if self.board.adjacent_horizontal_values(i, col)[1]  not in (WATER, HINT_WATER, EMPTY_SPACE):
+                if self.board.adjacent_horizontal_values(i, col)[1]  not in (WATER, EMPTY_SPACE):
                     return False
                 
             if self.board[row + boat_size - 1][col] == BOTTOM:
                 tuple_adjacent_e = self.board.adjacent_vertical_values(row + boat_size - 1, col)
                 for i in range(8):
                     if i != 0 and i != 4 and i != 6:
-                        if tuple_adjacent_e[i] not in (WATER, HINT_WATER, EMPTY_SPACE):
+                        if tuple_adjacent_e[i] not in (WATER, EMPTY_SPACE):
                             return False
                 count += 1
             elif self.board[row + boat_size - 1][col] == EMPTY_SPACE:
@@ -671,7 +686,7 @@ class Bimaru(Problem):
                 return False
         tuple_adjacent = self.board.adjacent_values(row, col)    
         for value in tuple_adjacent:
-            if value not in (WATER, HINT_WATER, EMPTY_SPACE):
+            if value not in (WATER, EMPTY_SPACE):
                 return False
         return True
 
@@ -771,6 +786,7 @@ if __name__ == "__main__":
     # Criar um estado com a configuração inicial:
     initial_state = BimaruState(board)
     
-    print(initial_state.board.print())
+    #goal_node = depth_first_tree_search(problem)
     
-    print("is goal test? ", problem.goal_test(initial_state))
+    print("Is goal? ", problem.goal_test(initial_state))
+    #print("Solution:\n", goal_node.state.board.print())
