@@ -6,21 +6,30 @@
 # 103808 João Miguel Nogueira
 # 103465 João Rocha
 
-HINT_WATER  = "W"
-WATER       = "."
 EMPTY_SPACE = "!"
 UNDONE_BOAT = "1"
-CIRCLE      = "C"
-TOP         = "T"
-MIDDLE      = "M"
-BOTTOM      = "B"
-LEFT        = "L"
-RIGHT       = "R"
+
+HINT_WATER  = "W"
+HINT_CIRCLE = "C"
+HINT_TOP    = "T"
+HINT_MIDDLE = "M"
+HINT_BOTTOM = "B"
+HINT_LEFT   = "L"
+HINT_RIGHT  = "R"
+
+WATER       = "."
+CIRCLE      = "c"
+TOP         = "t"
+MIDDLE      = "m"
+BOTTOM      = "b"
+LEFT        = "l"
+RIGHT       = "r"
+
 
 HORIZONTAL  = 0
 VERTICAL    = 1
 
-#          1x1  2x1  3x1  4x1
+#               1x1  2x1  3x1  4x1
 PIECES      = [  4 ,  3 ,  2 ,  1  ]
 
 import sys
@@ -195,9 +204,10 @@ class Board:
             if hint[2] == TOP:
                 
                 
-                if self.has_neighbour(row, col, TOP):
-                    # TODO
-                    pass
+                len_of_boat = self.check_neighbour(row, col, TOP)
+                if len_of_boat:
+                    if len_of_boat > 1:
+                        pass
                 else:
                     
                     self.matrix[row + 1][col] = UNDONE_BOAT
@@ -227,9 +237,10 @@ class Board:
             if hint[2] == BOTTOM:
                 
                 
-                if self.has_neighbour(row, col, BOTTOM):
-                    # TODO
-                    pass
+                len_of_boat = self.check_neighbour(row, col, BOTTOM)
+                if len_of_boat:
+                    if len_of_boat > 1:
+                        pass
                 else:
                 
                     self.matrix[row - 1][col] = UNDONE_BOAT
@@ -277,9 +288,10 @@ class Board:
                     
             if hint[2] == RIGHT:
                 
-                if self.has_neighbour(row, col, RIGHT):
-                    # TODO
-                    pass
+                len_of_boat = self.check_neighbour(row, col, RIGHT)
+                if len_of_boat:
+                    if len_of_boat > 1:
+                        pass
                 else:
                 
                     self.matrix[row][col - 1] = UNDONE_BOAT
@@ -308,9 +320,10 @@ class Board:
                     
             if hint[2] == LEFT:
                 
-                if self.has_neighbour(row, col, LEFT):
-                    # TODO
-                    pass
+                len_of_boat = self.check_neighbour(row, col, LEFT)
+                if len_of_boat:
+                    if len_of_boat > 1:
+                        pass
                 else:
                 
                     self.matrix[row][col + 1] = UNDONE_BOAT
@@ -337,28 +350,41 @@ class Board:
                     if row + 1 <= 9 and col + 2 <= 9:
                         self.matrix[row+1][col+2] = WATER
 
-    def has_neighbour(self, row, col, type):
+    def check_neighbour(self, row, col, type):
         """
         Verifica se uma dada posição tem um vizinho que o completa
         """
         
         if type == TOP:
-            
-            pass
+            if self.matrix[row + 1][col] == WATER:
+                return 0
+            index = row
+            for i in range(4):
+                if self
+                
         
         elif type == BOTTOM:
-            
-            pass
+            if self.matrix[row - 1][col] == WATER:
+                return 0
+            index = row
+            for i in range(4):
+                
         
         elif type == RIGHT:
-            
-            pass
+            if self.matrix[row][col - 1] == WATER:
+                return 0
+            index = col
+            for i in range(4):
+                
         
         elif type == LEFT:
-            
-            pass
+            if self.matrix[row][col + 1] == WATER:
+                return 0
+            index = col
+            for i in range(4):
         
-        return 
+        else:
+            raise ValueError("Invalid type")
 
     def count_boats(self):
         """Retorna o maior barco que ainda não foi colocado"""
