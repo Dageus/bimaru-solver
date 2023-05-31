@@ -360,14 +360,23 @@ class Board:
                 return 0
             index = row
             for i in range(4):
-                if self
+                if index + 1 > 9:
+                    # da merda
+                if self.matrix[index + 1][col] == UNDONE_BOAT:
+                    if self.matrix[index + 2][col] != WATER:
+                        self.matrix[index + 1][col] = MIDDLE
+                    else:
+                        self.matrix[index + 1][col] = BOTTOM
                 
+                FALTA RETIRAR O BARCO SE TIVER FEITO DOS PIECES
+                E ADICIONAR AGUAS
         
         elif type == BOTTOM:
             if self.matrix[row - 1][col] == WATER:
                 return 0
             index = row
             for i in range(4):
+                
                 
         
         elif type == RIGHT:
