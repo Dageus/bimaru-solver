@@ -740,12 +740,13 @@ class Bimaru(Problem):
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas de acordo com as regras do problema."""
         
-        matrix = state.board.matrix
         
-        if not np.any(state.board.pieces) or not np.any(state.board.rows) or not np.any(state.board.columns):
-            return False
+        """not np.any(state.board.pieces) or """
+        
+        if not np.any(state.board.rows) or not np.any(state.board.columns):
+            return True
 
-        return True
+        return False
                 
 
     def h(self, node: Node):
@@ -771,3 +772,5 @@ if __name__ == "__main__":
     initial_state = BimaruState(board)
     
     print(initial_state.board.print())
+    
+    print("is goal test? ", problem.goal_test(initial_state))
