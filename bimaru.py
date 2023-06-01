@@ -71,23 +71,35 @@ class Board:
     def adjacent_vertical_values(self, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente acima e abaixo,
         respectivamente."""
-        cell1 = self.matrix[row-1][col]
-        cell2 = self.matrix[row+1][col]
-        if self.matrix[row-1][col] == "." or row - 1 < 0:
+        if row - 1 < 0:
             cell1 = None
-        if self.matrix[row+1][col] == "." or row + 1 > 9:
+        elif self.matrix[row-1][col] == EMPTY_SPACE:
+            cell1 = None
+        else:
+            cell1 = self.matrix[row-1][col]
+        if row + 1 > 9:
             cell2 = None
+        elif self.matrix[row+1][col] == EMPTY_SPACE:
+            cell2 = None
+        else:
+            cell2 = self.matrix[row+1][col]
         return cell1, cell2
 
     def adjacent_horizontal_values(self, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
-        cell1 = self.matrix[row][col-1]
-        cell2 = self.matrix[row][col+1]
-        if self.matrix[row][col-1] == EMPTY_SPACE or col - 1 < 0:
+        if col - 1 < 0:
             cell1 = None
-        if self.matrix[row][col+1] == EMPTY_SPACE or col + 1 > 9:
+        elif self.matrix[row][col-1] == EMPTY_SPACE:
+            cell1 = None
+        else:
+            cell1 = self.matrix[row][col-1]
+        if col + 1 > 9:
             cell2 = None
+        elif self.matrix[row][col+1] == EMPTY_SPACE:
+            cell2 = None
+        else:
+            cell2 = self.matrix[row][col+1]
         return cell1, cell2
 
     def adjacent_diagonal1_values(self, row: int, col: int) -> tuple:
@@ -560,6 +572,7 @@ class BimaruState:
                         self.board.matrix[row][add_col] = MIDDLE
                         add_col -= 1
                 break
+            
             add_col += 1
 
     def treat_right(self, row, col):
@@ -661,7 +674,7 @@ class BimaruState:
                         add_row -= 1
                 break
                 
-        add_row += 1
+            add_row += 1
         
     def treat_bottom(self, row, col):
         """
@@ -714,6 +727,66 @@ class BimaruState:
             add_row -= 1
 
     
+    def treat_undone_boat(self, row, col):
+        """
+        Handles the case where a boat is found but it's not complete
+        """
+        
+        # check adjacent positions for other pieces of the boat
+        
+        horizontal_adjacent = self.board.adjacent_horizontal_values(row, col)
+        vertical_adjacent = self.board.adjacent_vertical_values(row, col)
+                
+        if all(value in (WATER, None) for value in horizontal_adjacent):
+            # possibility of a vertical boat
+            if all(value in (WATER, None) for value in vertical_adjacent):
+                # it's a circle
+                print("circle")
+                self.board.matrix[row][col] = CIRCLE
+                
+                # remover barco preenchido
+                self.remove_done_boat(1)
+            else:
+                # vertical boat
+                
+                # pela definição do loop, o resto do barco tem de estar abaixo
+                
+                # check if the boat is complete
+                
+                if vertical_adjacent[0] == TOP:
+                    # then this must be a middle piece
+                    self.board.matrix[row][col] = MIDDLE
+
+                    # while 
+                
+                # ver como completar o resto do barco
+                    
+                else:
+                    self.board.matrix[row][col] = TOP
+                    
+                    self.treat_top(row, col)
+                
+            
+        else:
+            # horizontal boat
+            
+            # pela definição do loop, o resto do barco tem de estar à direita
+            
+            # check if the boat is complete
+            
+            if horizontal_adjacent[0] == LEFT:
+                # then this must be a middle piece
+                self.board.matrix[row][col] = MIDDLE
+
+                # while 
+            
+            # ver como completar o resto do barco
+            
+            else:    
+                self.board.matrix[row][col] = LEFT
+                
+                self.treat_left(row, col)
+            
     
     def complete_boats(self):
         """
@@ -737,66 +810,8 @@ class BimaruState:
                         self.treat_bottom(row, col)
                         
                     elif position == UNDONE_BOAT:
-                        # verificar verticalmente ou horizontalmente
+                        self.treat_undone_boat(row, col)
     
-    # ---------------------------------------|
-    #                                        |
-    # maluco a sintaxe disto ta toda mal     |
-    #                                        |
-    # ---------------------------------------|
-    
-    # def is_submarine(self, row, col):
-    #     """Verifica se a posição é um submarino"""
-    #     tuple_sub = self.board[row][col].adajacent_values()
-    #     for value in tuple_sub:
-    #         if value == WATER:
-    #             return False
-    #     return True
-        
-
-    # def complete_boats(self, board: Board):
-    #     """Completa um barco"""
-    #     for row in range(10):
-    #         for col in range(10):
-    #             if self.board[row][col] == LEFT:
-    #                 col += 1
-    #                 while self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] != WATER:
-    #                     self.board[row][col] = MIDDLE
-    #                     col += 1
-    #                 self.board[row][col] = RIGHT
-    #             elif self.board[row][col] == TOP:
-    #                 col += 1
-    #                 while self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] != WATER:
-    #                     self.board[row][col] = MIDDLE
-    #                     row += 1
-    #                 self.board[row][col] = BOTTOM
-    #             elif self.board[row][col] == UNDONE_BOAT and \
-    #                 self.board[row][col].is_submarine(self, row, col):
-    #                 self.board[row][col] = CIRCLE
-    #             elif (self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == UNDONE_BOAT) or \
-    #                 (self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == RIGHT):
-    #                 self.board[row][col] = LEFT
-    #                 col += 1
-    #                 while self.board[row][col] != WATER and self.board[row][col + 1] != WATER \
-    #                     and self.board[row][col + 1] != EMPTY_SPACE and self.board[row][col] != RIGHT:
-
-    #                     self.board[row][col] = MIDDLE
-    #                     col += 1
-    #                 if self.board[row][col] == UNDONE_BOAT:
-    #                     self.board[row][col] = RIGHT
-    #             elif (self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == UNDONE_BOAT) or \
-    #                 (self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == BOTTOM):
-    #                 self.board[row][col] = TOP
-    #                 row += 1
-    #                 while self.board[row][col] != WATER and self.board[row + 1][col] != WATER \
-    #                     and self.board[row + 1][col] != EMPTY_SPACE and self.board[row][col] != BOTTOM:
-
-    #                     self.board[row][col] = MIDDLE
-    #                     row += 1
-    #                 if self.board[row][col] == UNDONE_BOAT:
-    #                     self.board[row][col] = BOTTOM
-                
-    #     return board
     
     def __lt__(self, other):
         return self.id < other.id
@@ -1009,6 +1024,8 @@ if __name__ == "__main__":
     
     print("Is goal? ", problem.goal_test(initial_state))
     print("Solution:")
-    print(problem.board.print())
+    print(initial_state.board.print())
     print("turns into:")
+    initial_state.complete_boats()
+    print(initial_state.board.print())
     
