@@ -512,6 +512,34 @@ class BimaruState:
         
         return self
     
+    def complete_boats(self):
+        """
+        Completa os barcos feitos de momento com a denominação correta.
+        """
+        
+        for row in range(10):
+            for col in range(10):
+                if self.board.matrix[row][col] != WATER and self.board.matrix[row][col] != EMPTY_SPACE:
+                    position = self.board.matrix[row][col]
+                    if position == LEFT:
+                        for add_col in range(col + 1, 10):
+                            if self.board.matrix[row][add_col] == UNDONE_BOAT:
+                        
+                    elif position == RIGHT:
+                        for add_col in range(col - 1, -1, -1):
+                            if self.board.matrix[row][add_col] == UNDONE_BOAT:
+                        
+                    elif position == TOP:
+                        for add_row in range(row + 1, 10):
+                            if self.board.matrix[add_row][col] == UNDONE_BOAT:
+                        
+                    elif position == BOTTOM:
+                        for add_row in range(row - 1, -1, -1):
+                            if self.board.matrix[add_row][col] == UNDONE_BOAT:
+                        
+                    elif position == UNDONE_BOAT:
+                        # TODO
+    
     maluco a sintaxe disto ta toda mal
     
     # def is_submarine(self, row, col):
