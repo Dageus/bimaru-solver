@@ -522,25 +522,145 @@ class BimaruState:
                 if self.board.matrix[row][col] != WATER and self.board.matrix[row][col] != EMPTY_SPACE:
                     position = self.board.matrix[row][col]
                     if position == LEFT:
-                        for add_col in range(col + 1, 10):
-                            if self.board.matrix[row][add_col] == UNDONE_BOAT:
-                        
+                        if col + 4 <= 9:
+                            index = col + 4
+                        else:
+                            index = 9
+                        add_col = col + 1
+                        found_pieces = False
+                        while add_col <= index:
+                            if self.board.matrix[row][add_col] == UNDONE_BOAT or self.board.matrix[row][add_col] == MIDDLE:
+                                found_pieces = True
+                            elif self.board.matrix[row][add_col] == RIGHT:
+                                # meter isto legivel
+                                if add_col == index:
+                                    break
+                                add_col -= 1
+                                while add_col > col:
+                                    self.board.matrix[row][add_col] = MIDDLE
+                                    add_col -= 1
+                                break
+                            elif self.board.matrix[row][add_col] == WATER:
+                                if found_pieces and add_col < index:
+                                    add_col -= 1
+                                    self.board.matrix[row][add_col] = RIGHT
+                                    # meter isto legivel
+                                    add_col -= 1
+                                    while add_col > col:
+                                        self.board.matrix[row][add_col] = MIDDLE
+                                        add_col -= 1
+                                break
+                            add_col += 1
+                            
                     elif position == RIGHT:
-                        for add_col in range(col - 1, -1, -1):
-                            if self.board.matrix[row][add_col] == UNDONE_BOAT:
+                        if col - 4 >= 0:
+                            index = col - 4
+                        else:
+                            index = 0
+                        add_col = col - 1
+                        found_pieces = False
+                        while add_col >= index:
+                            if self.board.matrix[row][add_col] == UNDONE_BOAT or self.board.matrix[row][add_col] == MIDDLE:
+                                found_pieces = True
+                            elif self.board.matrix[row][add_col] == LEFT:
+                                # meter isto legivel
+                                if add_col == index:
+                                    QUER DIZER QUE SAO 2 BARCOS 2x1 IMPORTANT BUSINESS
+                                    break
+                                add_col += 1
+                                while add_col < col:
+                                    self.board.matrix[row][add_col] = MIDDLE
+                                    add_col += 1
+                                break
+                            elif self.board.matrix[row][add_col] == WATER:
+                                if found_pieces and add_col > index:
+                                    add_col += 1
+                                    self.board.matrix[row][add_col] = LEFT
+                                    # meter isto legivel
+                                    add_col += 1
+                                    while add_col < col:
+                                        self.board.matrix[row][add_col] = MIDDLE
+                                        add_col += 1
+                                break
+                            
+                            add_col -= 1
+                            
+                        FALTA RETIRAR AS PEÇAS CASO ELAS ESTEJAM COMPLETAS DO PIECES
                         
                     elif position == TOP:
-                        for add_row in range(row + 1, 10):
+                        if row + 4 <= 9:
+                            index = row + 4
+                        else:
+                            index = 9
+                        add_row = row + 1
+                        found_pieces = False
+                        while add_row <= index:
                             if self.board.matrix[add_row][col] == UNDONE_BOAT:
+                                found_pieces = True
+                            elif self.board.matrix[add_row][col] == BOTTOM:
+                                if add_row == index:
+                                    2 BARCOS SEPARADOS
+                                    break
+                                add_row -= 1
+                                while add_row > row:
+                                    self.board.matrix[add_row][col] = MIDDLE
+                                    add_row -= 1
+                                break
+                            elif self.board.matrix[add_row][col] == WATER:
+                                if found_pieces and add_row < index:
+                                    add_row -= 1
+                                    self.board.matrix[add_row][col] = BOTTOM
+                                    add_row -= 1
+                                    while add_row > row:
+                                        self.board.matrix[add_row][col] = MIDDLE
+                                        add_row -= 1
+                                break
+                                
+                        add_row += 1
                         
                     elif position == BOTTOM:
-                        for add_row in range(row - 1, -1, -1):
+                        if row - 4 >= 0:
+                            index = row - 4
+                        else:
+                            index = 0
+                        # should be seperate function
+                        add_row = row - 1
+                        found_pieces = False
+                        while add_row >= index:
                             if self.board.matrix[add_row][col] == UNDONE_BOAT:
+                                found_pieces = True
+                                
+                            elif self.board.matrix[add_row][col] == TOP:
+                                if add_row == index:
+                                    2 BARCOS SEPARADOS
+                                    break
+                                add_row += 1
+                                
+                                while add_row < row:
+                                    self.board.matrix[add_row][col] = MIDDLE
+                                    add_row += 1
+                                break
+                            
+                            elif self.board.matrix[add_row][col] == WATER:
+                                if found_pieces and add_row > index:
+                                    add_row += 1
+                                    self.board.matrix[add_row][col] = TOP
+                                    add_row += 1
+                                    while add_row < row:
+                                        self.board.matrix[add_row][col] = MIDDLE
+                                        add_row += 1
+                                break
+                                
+                            add_row -= 1
                         
                     elif position == UNDONE_BOAT:
                         # TODO
     
-    maluco a sintaxe disto ta toda mal
+    # ---------------------------------------|
+    #                                        |
+    # maluco a sintaxe disto ta toda mal     |
+    #                                        |
+    # ---------------------------------------|
     
     # def is_submarine(self, row, col):
     #     """Verifica se a posição é um submarino"""
