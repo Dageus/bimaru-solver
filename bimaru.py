@@ -361,6 +361,7 @@ class Board:
             index = row
             for i in range(4):
                 if index + 1 > 9:
+                    pass
                     # da merda
                 if self.matrix[index + 1][col] == UNDONE_BOAT:
                     if self.matrix[index + 2][col] != WATER:
@@ -368,15 +369,15 @@ class Board:
                     else:
                         self.matrix[index + 1][col] = BOTTOM
                 
-                FALTA RETIRAR O BARCO SE TIVER FEITO DOS PIECES
-                E ADICIONAR AGUAS
+                # FALTA RETIRAR O BARCO SE TIVER FEITO DOS PIECES
+                # E ADICIONAR AGUAS
         
         elif type == BOTTOM:
             if self.matrix[row - 1][col] == WATER:
                 return 0
             index = row
             for i in range(4):
-                
+                pass
                 
         
         elif type == RIGHT:
@@ -384,14 +385,14 @@ class Board:
                 return 0
             index = col
             for i in range(4):
-                
+                pass
         
         elif type == LEFT:
             if self.matrix[row][col + 1] == WATER:
                 return 0
             index = col
             for i in range(4):
-        
+                pass
         else:
             raise ValueError("Invalid type")
 
@@ -595,35 +596,41 @@ class BimaruState:
         for row in range(10):
             for col in range(10):
                 if self.board[row][col] == LEFT:
-                    count = 1
-                    while count < 5 or self.board[row][col] != WATER:
-                        col += 1
+                    col += 1
+                    while self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] != WATER:
                         self.board[row][col] = MIDDLE
-                        count += 1
+                        col += 1
                     self.board[row][col] = RIGHT
                 elif self.board[row][col] == TOP:
-                    count = 1
-                    while count < 5 or self.board[row][col] != WATER:
-                        row += 1
+                    col += 1
+                    while self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] != WATER:
                         self.board[row][col] = MIDDLE
-                        count += 1
+                        row += 1
                     self.board[row][col] = BOTTOM
                 elif self.board[row][col] == UNDONE_BOAT and \
                     self.board[row][col].is_submarine(self, row, col):
                     self.board[row][col] = CIRCLE
-                elif self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == UNDONE_BOAT:
+                elif (self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == UNDONE_BOAT) or \
+                    (self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == RIGHT):
                     self.board[row][col] = LEFT
-                    while self.board[row][col] != WATER or self.board[row][col] != RIGHT:
+                    col += 1
+                    while self.board[row][col] != WATER and self.board[row][col + 1] != WATER \
+                        and self.board[row][col + 1] != EMPTY_SPACE and self.board[row][col] != RIGHT:
+
+                        self.board[row][col] = MIDDLE
                         col += 1
-                        self.board[row][col] = MIDDLE
-                    if self.board[row][col] != RIGHT:
+                    if self.board[row][col] == UNDONE_BOAT:
                         self.board[row][col] = RIGHT
-                elif self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == UNDONE_BOAT:
+                elif (self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == UNDONE_BOAT) or \
+                    (self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == BOTTOM):
                     self.board[row][col] = TOP
-                    while self.board[row][col] != WATER or self.board[row][col] != BOTTOM:
-                        row += 1
+                    row += 1
+                    while self.board[row][col] != WATER and self.board[row + 1][col] != WATER \
+                        and self.board[row + 1][col] != EMPTY_SPACE and self.board[row][col] != BOTTOM:
+
                         self.board[row][col] = MIDDLE
-                    if self.board[row][col] != BOTTOM:
+                        row += 1
+                    if self.board[row][col] == UNDONE_BOAT:
                         self.board[row][col] = BOTTOM
                 
         return board
