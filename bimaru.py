@@ -512,58 +512,60 @@ class BimaruState:
         
         return self
     
-    def is_submarine(self, row, col):
-        """Verifica se a posição é um submarino"""
-        tuple_sub = self.board[row][col].adajacent_values()
-        for value in tuple_sub:
-            if value == WATER:
-                return False
-        return True
+    maluco a sintaxe disto ta toda mal
+    
+    # def is_submarine(self, row, col):
+    #     """Verifica se a posição é um submarino"""
+    #     tuple_sub = self.board[row][col].adajacent_values()
+    #     for value in tuple_sub:
+    #         if value == WATER:
+    #             return False
+    #     return True
         
 
-    def complete_boat(self, board: Board):
-        """Completa um barco"""
-        for row in range(10):
-            for col in range(10):
-                if self.board[row][col] == LEFT:
-                    col += 1
-                    while self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] != WATER:
-                        self.board[row][col] = MIDDLE
-                        col += 1
-                    self.board[row][col] = RIGHT
-                elif self.board[row][col] == TOP:
-                    col += 1
-                    while self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] != WATER:
-                        self.board[row][col] = MIDDLE
-                        row += 1
-                    self.board[row][col] = BOTTOM
-                elif self.board[row][col] == UNDONE_BOAT and \
-                    self.board[row][col].is_submarine(self, row, col):
-                    self.board[row][col] = CIRCLE
-                elif (self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == UNDONE_BOAT) or \
-                    (self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == RIGHT):
-                    self.board[row][col] = LEFT
-                    col += 1
-                    while self.board[row][col] != WATER and self.board[row][col + 1] != WATER \
-                        and self.board[row][col + 1] != EMPTY_SPACE and self.board[row][col] != RIGHT:
+    # def complete_boats(self, board: Board):
+    #     """Completa um barco"""
+    #     for row in range(10):
+    #         for col in range(10):
+    #             if self.board[row][col] == LEFT:
+    #                 col += 1
+    #                 while self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] != WATER:
+    #                     self.board[row][col] = MIDDLE
+    #                     col += 1
+    #                 self.board[row][col] = RIGHT
+    #             elif self.board[row][col] == TOP:
+    #                 col += 1
+    #                 while self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] != WATER:
+    #                     self.board[row][col] = MIDDLE
+    #                     row += 1
+    #                 self.board[row][col] = BOTTOM
+    #             elif self.board[row][col] == UNDONE_BOAT and \
+    #                 self.board[row][col].is_submarine(self, row, col):
+    #                 self.board[row][col] = CIRCLE
+    #             elif (self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == UNDONE_BOAT) or \
+    #                 (self.board[row][col] == UNDONE_BOAT and self.board[row][col+1] == RIGHT):
+    #                 self.board[row][col] = LEFT
+    #                 col += 1
+    #                 while self.board[row][col] != WATER and self.board[row][col + 1] != WATER \
+    #                     and self.board[row][col + 1] != EMPTY_SPACE and self.board[row][col] != RIGHT:
 
-                        self.board[row][col] = MIDDLE
-                        col += 1
-                    if self.board[row][col] == UNDONE_BOAT:
-                        self.board[row][col] = RIGHT
-                elif (self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == UNDONE_BOAT) or \
-                    (self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == BOTTOM):
-                    self.board[row][col] = TOP
-                    row += 1
-                    while self.board[row][col] != WATER and self.board[row + 1][col] != WATER \
-                        and self.board[row + 1][col] != EMPTY_SPACE and self.board[row][col] != BOTTOM:
+    #                     self.board[row][col] = MIDDLE
+    #                     col += 1
+    #                 if self.board[row][col] == UNDONE_BOAT:
+    #                     self.board[row][col] = RIGHT
+    #             elif (self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == UNDONE_BOAT) or \
+    #                 (self.board[row][col] == UNDONE_BOAT and self.board[row+1][col] == BOTTOM):
+    #                 self.board[row][col] = TOP
+    #                 row += 1
+    #                 while self.board[row][col] != WATER and self.board[row + 1][col] != WATER \
+    #                     and self.board[row + 1][col] != EMPTY_SPACE and self.board[row][col] != BOTTOM:
 
-                        self.board[row][col] = MIDDLE
-                        row += 1
-                    if self.board[row][col] == UNDONE_BOAT:
-                        self.board[row][col] = BOTTOM
+    #                     self.board[row][col] = MIDDLE
+    #                     row += 1
+    #                 if self.board[row][col] == UNDONE_BOAT:
+    #                     self.board[row][col] = BOTTOM
                 
-        return board
+    #     return board
     
     def __lt__(self, other):
         return self.id < other.id
@@ -686,15 +688,9 @@ class Bimaru(Problem):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
         
-        # IMPORTANT:
-        
-        # ver linhas e colunas com baixo numero
-        
-        # ou 
-        
-        # ver como meter maior barco possivel
-        
         # formato da ação: (cell_1, cell_2, boat_size, orientação)
+        
+        state.board.complete_boats()
         
         board = state.board
         actions = []
@@ -783,3 +779,5 @@ if __name__ == "__main__":
     print("Is goal? ", problem.goal_test(initial_state))
     print("Solution:")
     print(problem.board.print())
+    print("turns into:")
+    
