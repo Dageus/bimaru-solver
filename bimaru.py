@@ -196,78 +196,71 @@ class Board:
         Colocar águas e barcos em volta dos hints caso seja possivel.
         """
         
-        for hint in self.hints:
+        i = 0
+        hint_len = len(self.hints)
+        
+        while i < hint_len:
+            
+            hint = self.hints[i]
             
             row = hint[0]
             col = hint[1]
         
-            if hint[2] == TOP:
+            if hint[2] == HINT_TOP:
                 
-                
-                len_of_boat = self.check_neighbour(row, col, TOP)
-                if len_of_boat:
-                    if len_of_boat > 1:
-                        pass
-                else:
-                    
+                if self.matrix[row + 1][col] == EMPTY_SPACE:
                     self.matrix[row + 1][col] = UNDONE_BOAT
-                    
+                
                     # retirar 1 ao valor da linha e da coluna
                     
                     self.rows[row + 1] -= 1
                     self.columns[col] -= 1
-                    
+                
+                if row - 1 >= 0:
+                    self.matrix[row-1][col] = WATER
+                if col - 1 >= 0:
+                    self.matrix[row][col-1] = WATER
+                    self.matrix[row + 1][col-1] = WATER
                     if row - 1 >= 0:
-                        self.matrix[row-1][col] = WATER
-                    if col - 1 >= 0:
-                        self.matrix[row][col-1] = WATER
-                        self.matrix[row + 1][col-1] = WATER
-                        if row - 1 >= 0:
-                            self.matrix[row-1][col-1] = WATER
-                        if row + 2 <= 9:
-                            self.matrix[row+2][col-1] = WATER
-                    if col + 1 <= 9: 
-                        self.matrix[row][col+1] = WATER
-                        self.matrix[row + 1][col+1] = WATER
-                        if row - 1 >= 0:
-                            self.matrix[row-1][col+1] = WATER 
-                        if row + 2 <= 9:
-                            self.matrix[row+2][col+1] = WATER
-                    
-            if hint[2] == BOTTOM:
+                        self.matrix[row-1][col-1] = WATER
+                    if row + 2 <= 9:
+                        self.matrix[row+2][col-1] = WATER
+                if col + 1 <= 9: 
+                    self.matrix[row][col+1] = WATER
+                    self.matrix[row + 1][col+1] = WATER
+                    if row - 1 >= 0:
+                        self.matrix[row-1][col+1] = WATER 
+                    if row + 2 <= 9:
+                        self.matrix[row+2][col+1] = WATER
                 
+            if hint[2] == HINT_BOTTOM:
                 
-                len_of_boat = self.check_neighbour(row, col, BOTTOM)
-                if len_of_boat:
-                    if len_of_boat > 1:
-                        pass
-                else:
-                
+                if self.matrix[row - 1][col] == EMPTY_SPACE:
                     self.matrix[row - 1][col] = UNDONE_BOAT
-                    
+                
                     # retirar 1 ao valor da linha e da coluna
                     
                     self.rows[row - 1] -= 1
                     self.columns[col] -= 1
-                    
+                
+                if row + 1 <= 9:
+                    self.matrix[row+1][col] = WATER
+                if col - 1 >= 0:
+                    self.matrix[row][col-1] = WATER
+                    self.matrix[row - 1][col-1] = WATER
+                    if row + 1 <= 9: 
+                        self.matrix[row+1][col-1] = WATER
+                    if row - 2 >= 0:
+                        self.matrix[row-2][col-1] = WATER
+                if col + 1 <= 9:
+                    self.matrix[row][col+1] = WATER
+                    self.matrix[row - 1][col+1] = WATER
                     if row + 1 <= 9:
-                        self.matrix[row+1][col] = WATER
-                    if col - 1 >= 0:
-                        self.matrix[row][col-1] = WATER
-                        self.matrix[row - 1][col-1] = WATER
-                        if row + 1 <= 9: 
-                            self.matrix[row+1][col-1] = WATER
-                        if row - 2 >= 0:
-                            self.matrix[row-2][col-1] = WATER
-                    if col + 1 <= 9:
-                        self.matrix[row][col+1] = WATER
-                        self.matrix[row - 1][col+1] = WATER
-                        if row + 1 <= 9:
-                            self.matrix[row+1][col+1] = WATER
-                        if row - 2 >= 0:
-                            self.matrix[row-2][col+1] = WATER
+                        self.matrix[row+1][col+1] = WATER
+                    if row - 2 >= 0:
+                        self.matrix[row-2][col+1] = WATER
                     
-            if hint[2] == CIRCLE:
+            if hint[2] == HINT_CIRCLE:
                 
                 if row - 1 >= 0:
                     self.matrix[row-1][col] = WATER
@@ -286,116 +279,63 @@ class Board:
                 if row + 1 <= 9 and col + 1 <= 9:
                     self.matrix[row+1][col+1] = WATER
                     
-            if hint[2] == RIGHT:
+            if hint[2] == HINT_RIGHT:
                 
-                len_of_boat = self.check_neighbour(row, col, RIGHT)
-                if len_of_boat:
-                    if len_of_boat > 1:
-                        pass
-                else:
-                
+                if self.matrix[row][col - 1] == EMPTY_SPACE:
                     self.matrix[row][col - 1] = UNDONE_BOAT
-                    
+                
                     # retirar 1 ao valor da linha e da coluna
                     
                     self.rows[row] -= 1
                     self.columns[col] -= 1
+            
+                if row - 1 >= 0:
+                    self.matrix[row-1][col] = WATER
+                    self.matrix[row-1][col - 1] = WATER
+                if row + 1 <= 9:
+                    self.matrix[row+1][col] = WATER
+                    self.matrix[row+1][col - 1] = WATER
+                if col + 1 <= 9:
+                    self.matrix[row][col+1] = WATER
+                if row - 1 >= 0 and col + 1 <= 9:
+                    self.matrix[row-1][col+1] = WATER
+                if row + 1 <= 9 and col + 1 <= 9:
+                    self.matrix[row+1][col+1] = WATER
+                if row - 1 >= 0 and col - 2 >= 0:
+                    self.matrix[row-1][col-2] = WATER
+                if row + 1 <= 9 and col - 2 >= 0:
+                    self.matrix[row+1][col-2] = WATER
                     
-                    if row - 1 >= 0:
-                        self.matrix[row-1][col] = WATER
-                        self.matrix[row-1][col - 1] = WATER
-                    if row + 1 <= 9:
-                        self.matrix[row+1][col] = WATER
-                        self.matrix[row+1][col - 1] = WATER
-                    if col + 1 <= 9:
-                        self.matrix[row][col+1] = WATER
-                    if row - 1 >= 0 and col + 1 <= 9:
-                        self.matrix[row-1][col+1] = WATER
-                    if row + 1 <= 9 and col + 1 <= 9:
-                        self.matrix[row+1][col+1] = WATER
-                    if row - 1 >= 0 and col - 2 >= 0:
-                        self.matrix[row-1][col-2] = WATER
-                    if row + 1 <= 9 and col - 2 >= 0:
-                        self.matrix[row+1][col-2] = WATER
-                    
-            if hint[2] == LEFT:
+            if hint[2] == HINT_LEFT:
                 
-                len_of_boat = self.check_neighbour(row, col, LEFT)
-                if len_of_boat:
-                    if len_of_boat > 1:
-                        pass
-                else:
-                
+                if self.matrix[row][col + 1] == EMPTY_SPACE:
                     self.matrix[row][col + 1] = UNDONE_BOAT
-                    
+                
                     # retirar 1 ao valor da linha e da coluna
                     
                     self.rows[row] -= 1
-                    self.columns[col] -= 1
+                    self.columns[col] -= 1  
+            
+                if row - 1 >= 0:
+                    self.matrix[row-1][col] = WATER
+                    self.matrix[row-1][col + 1] = WATER
+                if row + 1 <= 9:
+                    self.matrix[row+1][col] = WATER
+                    self.matrix[row+1][col + 1] = WATER
+                if col - 1 >= 0:
+                    self.matrix[row][col-1] = WATER
+                if row - 1 >= 0 and col - 1 >= 0:
+                    self.matrix[row-1][col-1] = WATER
+                if row + 1 <= 9 and col - 1 >= 0:
+                    self.matrix[row+1][col-1] = WATER
+                if row - 1 >= 0 and col + 2 <= 9:
+                    self.matrix[row-1][col+2] = WATER
+                if row + 1 <= 9 and col + 2 <= 9:
+                    self.matrix[row+1][col+2] = WATER
                     
-                    if row - 1 >= 0:
-                        self.matrix[row-1][col] = WATER
-                        self.matrix[row-1][col + 1] = WATER
-                    if row + 1 <= 9:
-                        self.matrix[row+1][col] = WATER
-                        self.matrix[row+1][col + 1] = WATER
-                    if col - 1 >= 0:
-                        self.matrix[row][col-1] = WATER
-                    if row - 1 >= 0 and col - 1 >= 0:
-                        self.matrix[row-1][col-1] = WATER
-                    if row + 1 <= 9 and col - 1 >= 0:
-                        self.matrix[row+1][col-1] = WATER
-                    if row - 1 >= 0 and col + 2 <= 9:
-                        self.matrix[row-1][col+2] = WATER
-                    if row + 1 <= 9 and col + 2 <= 9:
-                        self.matrix[row+1][col+2] = WATER
+            i += 1
 
-    def check_neighbour(self, row, col, type):
-        """
-        Verifica se uma dada posição tem um vizinho que o completa
-        """
-        
-        if type == TOP:
-            if self.matrix[row + 1][col] == WATER:
-                return 0
-            index = row
-            for i in range(4):
-                if index + 1 > 9:
-                    pass
-                    # da merda
-                if self.matrix[index + 1][col] == UNDONE_BOAT:
-                    if self.matrix[index + 2][col] != WATER:
-                        self.matrix[index + 1][col] = MIDDLE
-                    else:
-                        self.matrix[index + 1][col] = BOTTOM
-                
-                # FALTA RETIRAR O BARCO SE TIVER FEITO DOS PIECES
-                # E ADICIONAR AGUAS
-        
-        elif type == BOTTOM:
-            if self.matrix[row - 1][col] == WATER:
-                return 0
-            index = row
-            for i in range(4):
-                pass
-                
-        
-        elif type == RIGHT:
-            if self.matrix[row][col - 1] == WATER:
-                return 0
-            index = col
-            for i in range(4):
-                pass
-        
-        elif type == LEFT:
-            if self.matrix[row][col + 1] == WATER:
-                return 0
-            index = col
-            for i in range(4):
-                pass
-        else:
-            raise ValueError("Invalid type")
-
+    
     def count_boats(self):
         """Retorna o maior barco que ainda não foi colocado"""
         boats={1:4, 2:3, 3:2, 4:1}
