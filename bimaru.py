@@ -179,10 +179,11 @@ class Board:
 
             row = hint[0]
             col = hint[1]
+            hint[2] = hint[2].lower()
             
             # retirar 1 ao valor da linha e da coluna
             
-            if hint[2] != HINT_WATER:
+            if hint[2] != "w":
                 matrix[row][col] = hint[2]
                 rows[row] -= 1
                 columns[col] -= 1
@@ -196,17 +197,12 @@ class Board:
         Colocar águas e barcos em volta dos hints caso seja possivel.
         """
         
-        i = 0
-        hint_len = len(self.hints)
-        
-        while i < hint_len:
-            
-            hint = self.hints[i]
+        for hint in self.hints:
             
             row = hint[0]
             col = hint[1]
         
-            if hint[2] == HINT_TOP:
+            if hint[2] == TOP:
                 
                 if self.matrix[row + 1][col] == EMPTY_SPACE:
                     self.matrix[row + 1][col] = UNDONE_BOAT
@@ -233,7 +229,7 @@ class Board:
                     if row + 2 <= 9:
                         self.matrix[row+2][col+1] = WATER
                 
-            if hint[2] == HINT_BOTTOM:
+            if hint[2] == BOTTOM:
                 
                 if self.matrix[row - 1][col] == EMPTY_SPACE:
                     self.matrix[row - 1][col] = UNDONE_BOAT
@@ -260,7 +256,9 @@ class Board:
                     if row - 2 >= 0:
                         self.matrix[row-2][col+1] = WATER
                     
-            if hint[2] == HINT_CIRCLE:
+            if hint[2] == CIRCLE:
+                
+                
                 
                 if row - 1 >= 0:
                     self.matrix[row-1][col] = WATER
@@ -279,7 +277,7 @@ class Board:
                 if row + 1 <= 9 and col + 1 <= 9:
                     self.matrix[row+1][col+1] = WATER
                     
-            if hint[2] == HINT_RIGHT:
+            if hint[2] == RIGHT:
                 
                 if self.matrix[row][col - 1] == EMPTY_SPACE:
                     self.matrix[row][col - 1] = UNDONE_BOAT
@@ -306,7 +304,7 @@ class Board:
                 if row + 1 <= 9 and col - 2 >= 0:
                     self.matrix[row+1][col-2] = WATER
                     
-            if hint[2] == HINT_LEFT:
+            if hint[2] == LEFT:
                 
                 if self.matrix[row][col + 1] == EMPTY_SPACE:
                     self.matrix[row][col + 1] = UNDONE_BOAT
@@ -332,8 +330,6 @@ class Board:
                     self.matrix[row-1][col+2] = WATER
                 if row + 1 <= 9 and col + 2 <= 9:
                     self.matrix[row+1][col+2] = WATER
-                    
-            i += 1
 
     
     def count_boats(self):
@@ -393,9 +389,6 @@ class BimaruState:
                     for j in range(0, 10):
                         if self.board.matrix[j][i] == EMPTY_SPACE:
                             self.board.matrix[j][i] = WATER
-                        if self.board.matrix[j][i] == UNDONE_BOAT:
-                            #TODO
-                            pass
                 row = self.board.matrix[i]
                 non_zeros = np.nonzero((row == LEFT) | (row == RIGHT) | (row == MIDDLE) | (row == CIRCLE) | (row == UNDONE_BOAT) | (row == TOP) | (row == BOTTOM))
                 print("row {} non zeros len: ".format(i) + str(non_zeros[0].size), "vs. ", self.board.unaltered_rows[i])
@@ -403,9 +396,6 @@ class BimaruState:
                     for j in range(0, 10):
                         if self.board.matrix[i][j] == EMPTY_SPACE:
                             self.board.matrix[i][j] = WATER
-                        if self.board.matrix[i][j] == UNDONE_BOAT:
-                            #TODO
-                            pass
             
             
             for i in range(10):
@@ -759,6 +749,8 @@ class Bimaru(Problem):
         """not np.any(state.board.pieces) or """
         
         if not np.any(state.board.rows) or not np.any(state.board.columns):
+            for hint in state.board.hints:
+                state.board.matrix[hint[0]][hint[1]] = hint[2].upper()
             return True
 
         return False
@@ -789,4 +781,5 @@ if __name__ == "__main__":
     #goal_node = depth_first_tree_search(problem)
     
     print("Is goal? ", problem.goal_test(initial_state))
-    #print("Solution:\n", goal_node.state.board.print())
+    print("Solution:")
+    print(problem.board.print())
