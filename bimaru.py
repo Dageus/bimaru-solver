@@ -7,7 +7,7 @@
 # 103465 João Rocha
 
 EMPTY_SPACE = "!"
-UNDONE_BOAT = "1"
+UNDONE_BOAT = "O"
 
 HINT_WATER  = "W"
 HINT_CIRCLE = "C"
@@ -61,10 +61,11 @@ class Board:
         self.unaltered_columns = unaltered_columns
         self.hints = hints
         self.pieces = PIECES
+        self.post_parse()
 
     def get_value(self, row: int, col: int) -> str:
         """Devolve o valor na respetiva posição do tabuleiro."""
-        if self.matrix[row][col] == ".":
+        if self.matrix[row][col] == EMPTY_SPACE:
             return None
         return self.matrix[row][col]
             
@@ -347,20 +348,19 @@ class Board:
     def count_boats(self):
         """Retorna o maior barco que ainda não foi colocado"""
         boats={1:4, 2:3, 3:2, 4:1}
-        badbad = (WATER,  WATER)
         for row in range(0, 10):
             for col in range(0, 10):
                 count = 1
                 if self.matrix[row][col] == TOP:
                     for i in range(0, 10):
-                        if self.matrix[row + i][col] not in badbad:
+                        if self.matrix[row + i][col] != WATER:
                             count += 1
                         if self.matrix[row + i][col] == BOTTOM:
                             boats[count] -= 1
                             break
                 elif self.matrix[row][col] == LEFT:
                     for i in range(0, 10):
-                        if self.matrix[row][col + i] not in badbad:
+                        if self.matrix[row][col + i] != WATER:
                             count += 1
                         if self.matrix[row][col + i] == RIGHT:
                             boats[count] -= 1
@@ -741,7 +741,6 @@ class BimaruState:
             # possibility of a vertical boat
             if all(value in (WATER, None) for value in vertical_adjacent):
                 # it's a circle
-                print("circle")
                 self.board.matrix[row][col] = CIRCLE
                 
                 # remover barco preenchido
@@ -757,7 +756,6 @@ class BimaruState:
                     # then this must be a middle piece
                     self.board.matrix[row][col] = MIDDLE
 
-                    # while 
                 
                 # ver como completar o resto do barco
                     
@@ -778,7 +776,7 @@ class BimaruState:
                 # then this must be a middle piece
                 self.board.matrix[row][col] = MIDDLE
 
-                # while 
+                # ISTO TA MAL, VERIFICAR QUE O BARCO ESTA DELIMITADO POR AGUASN AT LEAST
             
             # ver como completar o resto do barco
             
@@ -991,6 +989,7 @@ class Bimaru(Problem):
         """not np.any(state.board.pieces) or """
         
         if not np.any(state.board.rows) or not np.any(state.board.columns):
+            state.complete_boats()
             for hint in state.board.hints:
                 state.board.matrix[hint[0]][hint[1]] = hint[2].upper()
             return True
@@ -1009,10 +1008,6 @@ class Bimaru(Problem):
 if __name__ == "__main__":
     
     board = Board.parse_instance()
-    
-    print(board.print())
-    
-    Board.post_parse(board)
     
     print(board.print())
     # Criar uma instância de Bimaru:
