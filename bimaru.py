@@ -540,7 +540,7 @@ class BimaruState:
         while add_col <= index:
             if self.board.matrix[row][add_col] == UNDONE_BOAT or self.board.matrix[row][add_col] == MIDDLE:
                 found_pieces = True
-            elif self.board.matrix[row][add_col] == RIGHT:
+            elif self.board.matrix[row][add_col] == RIGHT or index == 9:
                 # meter isto legivel
                 if add_col == index:
                     # quer dizer que sao 2 barcos, preencher so um deles e
@@ -553,6 +553,9 @@ class BimaruState:
                 # remover barco preenchido
                 size_of_boat = index - add_col
                 self.remove_done_boat(size_of_boat)
+
+                if index == 9:
+                    self.board.matrix[row][index] = RIGHT
                 
                 add_col -= 1
                 while add_col > col:
@@ -589,7 +592,7 @@ class BimaruState:
         while add_col >= index:
             if self.board.matrix[row][add_col] == UNDONE_BOAT or self.board.matrix[row][add_col] == MIDDLE:
                 found_pieces = True
-            elif self.board.matrix[row][add_col] == LEFT:
+            elif self.board.matrix[row][add_col] == LEFT or index == 0:
                 
                 if add_col == index:
                     # quer dizer que sao 2 barcos, preencher so um deles e
@@ -603,6 +606,9 @@ class BimaruState:
                 size_of_boat = col - add_col
                 self.remove_done_boat(size_of_boat)
                 
+                if index == 0:
+                    self.board.matrix[row][index] = LEFT
+
                 add_col += 1
                 while add_col < col:
                     self.board.matrix[row][add_col] = MIDDLE
@@ -640,7 +646,7 @@ class BimaruState:
         while add_row <= index:
             if self.board.matrix[add_row][col] == UNDONE_BOAT:
                 found_pieces = True
-            elif self.board.matrix[add_row][col] == BOTTOM:
+            elif self.board.matrix[add_row][col] == BOTTOM or index == 9:
                 if add_row == index:
                     # quer dizer que sao 2 barcos, preencher so um deles e
                     # deixar o algoritmo fazer o resto
@@ -650,6 +656,9 @@ class BimaruState:
                     # remover barco preenchido
                     self.remove_done_boat(2)    
                     break
+
+                if index == 9:
+                    self.board.matrix[index][col] = TOP
                 
                 # remover barco preenchido
                 size_of_boat = add_row - row
@@ -692,7 +701,7 @@ class BimaruState:
             if self.board.matrix[add_row][col] == UNDONE_BOAT:
                 found_pieces = True
                 
-            elif self.board.matrix[add_row][col] == TOP:
+            elif self.board.matrix[add_row][col] == TOP or index == 0:
                 if add_row == index:
                     # quer dizer que sao 2 barcos, preencher so um deles e
                     # deixar o algoritmo fazer o resto
@@ -702,6 +711,9 @@ class BimaruState:
                     # remover barco preenchido
                     self.remove_done_boat(2)
                     break
+
+                if index == 0:
+                    self.board.matrix[index][col] = TOP
                 
                 # remover barco preenchido
                 size_of_boat = row - add_row
@@ -760,6 +772,44 @@ class BimaruState:
                 # ver como completar o resto do barco
                     
                 else:
+
+                    # ver se o barco esta delimitado por água
+
+                    add_col = col + 1
+                    found_pieces = False
+                    while self.board.matrix[row][add_col] not in (WATER, EMPTY_SPACE):
+                        if self.board.matrix[row][add_col] == UNDONE_BOAT or self.board.matrix[row][add_col] == MIDDLE:
+                            found_pieces = True
+                        elif self.board.matrix[row][add_col] == RIGHT:
+                            # meter isto legivel
+                            
+                            # remover barco preenchido
+                            size_of_boat = add_col - col + 1
+                            self.remove_done_boat(size_of_boat)
+
+                            if index == 9:
+                                self.board.matrix[row][index] = RIGHT
+                            
+                            add_col -= 1
+                            while add_col > col:
+                                self.board.matrix[row][add_col] = MIDDLE
+                                add_col -= 1
+                            break
+                        
+                        add_col += 1
+
+                        if found_pieces and add_col < index:
+                            add_col -= 1
+                            self.board.matrix[row][add_col] = RIGHT
+                            # remover barco preenchido
+                            size_of_boat = index - add_col
+                            self.remove_done_boat(size_of_boat)
+                            
+                            add_col -= 1
+                            while add_col > col:
+                                self.board.matrix[row][add_col] = MIDDLE
+                                add_col -= 1
+                        break
                     self.board.matrix[row][col] = TOP
                     
                     self.treat_top(row, col)
@@ -782,8 +832,6 @@ class BimaruState:
             
             else:    
                 self.board.matrix[row][col] = LEFT
-                
-                self.treat_left(row, col)
             
     
     def complete_boats(self):
@@ -1019,8 +1067,5 @@ if __name__ == "__main__":
     
     print("Is goal? ", problem.goal_test(initial_state))
     print("Solution:")
-    print(initial_state.board.print())
-    print("turns into:")
-    initial_state.complete_boats()
     print(initial_state.board.print())
     
