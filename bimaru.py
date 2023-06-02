@@ -1037,19 +1037,34 @@ class Bimaru(Problem):
         
         if action[2] == 1:
             self.board.matrix[action[0]][action[1]] = CIRCLE
+            self.board.rows[action[0]] -= 1
+            self.board.columns[action[1]] -= 1
+            for row in range(action[0] - 1, action[0] + 2):
+                for col in range(action[1] - 1, action[1] + 2):
+                    if row >= 0 and row < 10 and col >= 0 and col < 10 and row != action[0] and col != action[1]:
+                        if self.board.matrix[row][col] == EMPTY_SPACE:
+                            self.board.matrix[row][col] = WATER
         elif action[3] == HORIZONTAL:
             self.board.matrix[action[0]][action[1]] = LEFT
             for col in range(action[1], action[1] + action[2] - 1):
                 self.board.matrix[action[0]][col] = MIDDLE
             self.board.matrix[action[0]][action[1] + action[2] - 1] = RIGHT
+            for row in range(action[0] - 1, action[0] + 2):
+                for col in range(action[1] - 1, action[1] + action[2] + 1):
+                    if row >= 0 and row < 10 and col >= 0 and col < 10 and not ( row == action[0] and action[1] <= col <= action[1] + action[2] - 1):
+                        if self.board.matrix[row][col] == EMPTY_SPACE:
+                            self.board.matrix[row][col] = WATER
         
         elif action[3] == VERTICAL:
             self.board.matrix[action[0]][action[1]] = TOP
             for row in range(action[0], action[0] + action[2] - 1):
                 self.board.matrix[row][action[1]] = MIDDLE
             self.board.matrix[action[0] + action[2] - 1][action[1]] = BOTTOM
-        
-        
+            for row in range(action[0] - 1, action[0] + action[2] + 1):
+                for col in range(action[1] - 1, action[1] + 2):
+                    if row >= 0 and row < 10 and col >= 0 and col < 10 and not ( action[0] <= row <= action[0] + action[2] - 1 and col == action[1]):
+                        if self.board.matrix[row][col] == EMPTY_SPACE:
+                            self.board.matrix[row][col] = WATER
         return BimaruState(state.board) 
 
     def goal_test(self, state: BimaruState):
