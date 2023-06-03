@@ -841,32 +841,32 @@ class Board:
                 return False
                 
             for i in range(col + 1, col + boat_size - 1):
-                if self.board.matrix[row][i] == EMPTY_SPACE:
-                    if self.board.columns[i] < 1:
+                if self.matrix[row][i] == EMPTY_SPACE:
+                    if self.columns[i] < 1:
                         return False
-                elif self.board.matrix[row][i] in (MIDDLE, UNDONE_BOAT):
+                elif self.matrix[row][i] in (MIDDLE, UNDONE_BOAT):
                     count += 1
                 else:
                     return False
-                if self.board.adjacent_vertical_values(row, i)[0]  not in (WATER, EMPTY_SPACE):
+                if self.adjacent_vertical_values(row, i)[0]  not in (WATER, EMPTY_SPACE):
                     return False
-                if self.board.adjacent_vertical_values(row, i)[1]  not in (WATER, EMPTY_SPACE):
+                if self.adjacent_vertical_values(row, i)[1]  not in (WATER, EMPTY_SPACE):
                     return False
                 
-            if self.board.matrix[row][col + boat_size - 1] in (RIGHT, UNDONE_BOAT):
-                tuple_adjacent_e = self.board.adjacent_values(row, col + boat_size - 1)
+            if self.matrix[row][col + boat_size - 1] in (RIGHT, UNDONE_BOAT):
+                tuple_adjacent_e = self.adjacent_values(row, col + boat_size - 1)
                 for i in range(8):
                     if i != 2 and i != 4 and i != 7:
                         if tuple_adjacent_e[i] not in (WATER, EMPTY_SPACE):
                             return False
                 count += 1
-            elif self.board.matrix[row][col + boat_size - 1] == EMPTY_SPACE:
-                if self.board.columns[col + boat_size - 1] < 1:
+            elif self.matrix[row][col + boat_size - 1] == EMPTY_SPACE:
+                if self.columns[col + boat_size - 1] < 1:
                     return False  
             else:
                 return False
 
-            if self.board.rows[row] < boat_size - count:
+            if self.rows[row] < boat_size - count:
                 return False
             
             
@@ -877,46 +877,46 @@ class Board:
         elif orientation == VERTICAL:
             if row + boat_size - 1 > 9:
                 return False
-            if self.board.matrix[row][col] in (TOP, UNDONE_BOAT):
-                tuple_adjacent_b = self.board.adjacent_values(row, col)
+            if self.matrix[row][col] in (TOP, UNDONE_BOAT):
+                tuple_adjacent_b = self.adjacent_values(row, col)
                 for i in range(8):
                     if i != 1 and i != 5 and i != 7:
                         if tuple_adjacent_b[i] not in (WATER, EMPTY_SPACE):
                             return False
                 count += 1
-            elif self.board.matrix[row][col] == EMPTY_SPACE:
-                if self.board.rows[row] < 1:
+            elif self.matrix[row][col] == EMPTY_SPACE:
+                if self.rows[row] < 1:
                     return False
                 count += 1            
             else:
                 return False    
             for i in range(row + 1, row + boat_size - 1):
-                if self.board.matrix[i][col] == EMPTY_SPACE:
-                    if self.board.rows[i] < 1:
+                if self.matrix[i][col] == EMPTY_SPACE:
+                    if self.rows[i] < 1:
                         return False
                     count += 1
-                elif self.board.matrix[i][col] in (MIDDLE, UNDONE_BOAT):
+                elif self.matrix[i][col] in (MIDDLE, UNDONE_BOAT):
                     count += 1
                 else:
                     return False
-                if self.board.adjacent_horizontal_values(i, col)[0]  not in (WATER, EMPTY_SPACE):
+                if self.adjacent_horizontal_values(i, col)[0]  not in (WATER, EMPTY_SPACE):
                     return False
-                if self.board.adjacent_horizontal_values(i, col)[1]  not in (WATER, EMPTY_SPACE):
+                if self.adjacent_horizontal_values(i, col)[1]  not in (WATER, EMPTY_SPACE):
                     return False
                 
             if self.board.matrix[row + boat_size - 1][col] in (BOTTOM, UNDONE_BOAT):
-                tuple_adjacent_e = self.board.matrix.adjacent_values(row + boat_size - 1, col)
+                tuple_adjacent_e = self.adjacent_values(row + boat_size - 1, col)
                 for i in range(8):
                     if i != 0 and i != 4 and i != 6:
                         if tuple_adjacent_e[i] not in (WATER, EMPTY_SPACE):
                             return False
                 count += 1
-            elif self.board.matrix[row + boat_size - 1][col] == EMPTY_SPACE:
-                if self.board.matrix.rows[row + boat_size - 1] < 1:
+            elif self.matrix[row + boat_size - 1][col] == EMPTY_SPACE:
+                if self.rows[row + boat_size - 1] < 1:
                     return False
             else:
                 return False
-            if self.board.matrix.columns[col] < boat_size - count:
+            if self.columns[col] < boat_size - count:
                 return False
  
 
@@ -925,13 +925,13 @@ class Board:
     def is_valid_submarine_position(self, row, col):
         """Verifica se colocar um submarino na posição dada é válido"""
 
-        if self.board.matrix[row][col] != EMPTY_SPACE:
+        if self.matrix[row][col] != EMPTY_SPACE:
             return False
         
-        if self.board.matrix[row][col] == EMPTY_SPACE:
-            if self.board.matrix.rows[row] < 1 or self.board.matrix.columns[col] < 1:
+        if self.matrix[row][col] == EMPTY_SPACE:
+            if self.rows[row] < 1 or self.columns[col] < 1:
                 return False
-        tuple_adjacent = self.board.matrix.adjacent_values(row, col)    
+        tuple_adjacent = self.adjacent_values(row, col)    
         for value in tuple_adjacent:
             if value not in (WATER, EMPTY_SPACE):
                 return False
