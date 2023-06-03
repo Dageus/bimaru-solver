@@ -531,212 +531,173 @@ class BimaruState:
         """
         Handles the case where a boat LEFT is found
         """
-        if col + 4 <= 9:
-            index = col + 4
-        else:
-            index = 9
+        
         add_col = col + 1
         found_pieces = False
-        while add_col <= index:
-            if self.board.matrix[row][add_col] == UNDONE_BOAT or self.board.matrix[row][add_col] == MIDDLE:
+        
+        while self.board.matrix[row][add_col] not in (WATER, EMPTY_SPACE):
+            if self.board.matrix[row][add_col] in (UNDONE_BOAT, MIDDLE):
                 found_pieces = True
-            elif self.board.matrix[row][add_col] == RIGHT or index == 9:
-                # meter isto legivel
-                if add_col == index:
-                    # quer dizer que sao 2 barcos, preencher so um deles e
-                    # deixar o algoritmo fazer o resto
-                    self.board.matrix[row][col + 1] = RIGHT
-                    self.board.matrix[row][col + 2] = WATER
-                    # remover barco preenchido
-                    self.remove_done_boat(2)
-                    break
-                # remover barco preenchido
-                size_of_boat = index - add_col
-                self.remove_done_boat(size_of_boat)
-
-                if index == 9:
-                    self.board.matrix[row][index] = RIGHT
                 
-                add_col -= 1
-                while add_col > col:
-                    self.board.matrix[row][add_col] = MIDDLE
-                    add_col -= 1
+            elif self.board.matrix[row][add_col] == RIGHT:
+                # barco acabou
+                
+                found_pieces = True
+                
+                add_col += 1
+                
                 break
-            elif self.board.matrix[row][add_col] == WATER:
-                if found_pieces and add_col < index:
-                    add_col -= 1
-                    self.board.matrix[row][add_col] = RIGHT
-                    # remover barco preenchido
-                    size_of_boat = index - add_col
-                    self.remove_done_boat(size_of_boat)
-                    
-                    add_col -= 1
-                    while add_col > col:
-                        self.board.matrix[row][add_col] = MIDDLE
-                        add_col -= 1
+            
+            if add_col == 9:
+                # chegamos ao final da linha, o barco acabou
+                
+                add_col += 1
+                
                 break
             
             add_col += 1
+
+        if found_pieces:
+            add_col -= 1
+            self.board.matrix[row][add_col] = RIGHT
+            # remover barco preenchido
+            size_of_boat = add_col - col + 1
+            print("boat of size: ", size_of_boat)
+            self.remove_done_boat(size_of_boat)
+            
+            add_col -= 1
+            while add_col > col:
+                self.board.matrix[row][add_col] = MIDDLE
+                add_col -= 1
 
     def treat_right(self, row, col):
         """
         Handles the case where a boat RIGHT is found
         """
         
-        if col - 4 >= 0:
-            index = col - 4
-        else:
-            index = 0
         add_col = col - 1
         found_pieces = False
-        while add_col >= index:
-            if self.board.matrix[row][add_col] == UNDONE_BOAT or self.board.matrix[row][add_col] == MIDDLE:
+        
+        while self.board.matrix[row][add_col] not in (WATER, EMPTY_SPACE):
+            if self.board.matrix[row][add_col] in (UNDONE_BOAT, MIDDLE):
                 found_pieces = True
-            elif self.board.matrix[row][add_col] == LEFT or index == 0:
                 
-                if add_col == index:
-                    # quer dizer que sao 2 barcos, preencher so um deles e
-                    # deixar o algoritmo fazer o resto
-                    self.board.matrix[row][col - 1] = LEFT
-                    self.board.matrix[row][col - 2] = WATER
-                    # remover barco preenchido
-                    self.remove_done_boat(2)
-                    break
-                # remover barco preenchido
-                size_of_boat = col - add_col
-                self.remove_done_boat(size_of_boat)
+            elif self.board.matrix[row][add_col] == LEFT:
+                # barco acabou
                 
-                if index == 0:
-                    self.board.matrix[row][index] = LEFT
-
-                add_col += 1
-                while add_col < col:
-                    self.board.matrix[row][add_col] = MIDDLE
-                    add_col += 1
+                add_col -= 1
+                
+                found_pieces = True
+                
                 break
-            elif self.board.matrix[row][add_col] == WATER:
-                if found_pieces and add_col > index:
-                    # remover barco preenchido
-                    size_of_boat = col - add_col
-                    self.remove_done_boat(size_of_boat)
-                    
-                    add_col += 1
-                    self.board.matrix[row][add_col] = LEFT
-                    # meter isto legivel
-                    add_col += 1
-                    while add_col < col:
-                        self.board.matrix[row][add_col] = MIDDLE
-                        add_col += 1
+            
+            if add_col == 0:
+                # chegamos ao final da linha, o barco acabou
+                
+                add_col -= 1
+                
                 break
             
             add_col -= 1
+
+        if found_pieces:
+            add_col += 1
+            self.board.matrix[row][add_col] = LEFT
+            print("[", row, "][", add_col, "] = ", LEFT)
+            # remover barco preenchido
+            size_of_boat = add_col - col + 1
+            print("boat of size: ", size_of_boat)
+            self.remove_done_boat(size_of_boat)
             
+            add_col += 1
+            while add_col > col:
+                self.board.matrix[row][add_col] = MIDDLE
+                add_col += 1
+        
     
     def treat_top(self, row, col):
         """
         Handles the case where a boat TOP is found
         """
         
-        if row + 4 <= 9:
-            index = row + 4
-        else:
-            index = 9
         add_row = row + 1
         found_pieces = False
-        while add_row <= index:
-            if self.board.matrix[add_row][col] == UNDONE_BOAT:
+        
+        while self.board.matrix[add_row][col] not in (WATER, EMPTY_SPACE):
+            if self.board.matrix[add_row][col] in (UNDONE_BOAT, MIDDLE):
                 found_pieces = True
-            elif self.board.matrix[add_row][col] == BOTTOM or index == 9:
-                if add_row == index:
-                    # quer dizer que sao 2 barcos, preencher so um deles e
-                    # deixar o algoritmo fazer o resto
-                    self.board.matrix[row + 1][col] = BOTTOM
-                    self.board.matrix[row + 2][col] = WATER
-                    
-                    # remover barco preenchido
-                    self.remove_done_boat(2)    
-                    break
-
-                if index == 9:
-                    self.board.matrix[index][col] = TOP
                 
-                # remover barco preenchido
-                size_of_boat = add_row - row
-                self.remove_done_boat(size_of_boat)
+            elif self.board.matrix[add_row][col] == BOTTOM:
+                # barco acabou
                 
-                add_row -= 1
-                while add_row > row:
-                    self.board.matrix[add_row][col] = MIDDLE
-                    add_row -= 1
+                found_pieces = True
+                
+                add_row += 1
+                
                 break
-            elif self.board.matrix[add_row][col] == WATER:
-                if found_pieces and add_row < index:
-                    add_row -= 1
-                    # remover barco preenchido
-                    size_of_boat = add_row - row
-                    self.remove_done_boat(size_of_boat)
-                    
-                    self.board.matrix[add_row][col] = BOTTOM
-                    add_row -= 1
-                    while add_row > row:
-                        self.board.matrix[add_row][col] = MIDDLE
-                        add_row -= 1
-                break
+            
+            if add_row == 9:
+                # chegamos ao final da linha, o barco acabou
                 
+                add_row += 1
+                
+                break
+            
             add_row += 1
+
+        if found_pieces:
+            add_row -= 1
+            self.board.matrix[add_row][col] = BOTTOM
+            # remover barco preenchido
+            size_of_boat = add_row - row + 1
+            self.remove_done_boat(size_of_boat)
+            
+            add_row -= 1
+            while add_row > row:
+                self.board.matrix[add_row][col] = MIDDLE
+                add_row -= 1
         
     def treat_bottom(self, row, col):
         """
         Handles the case where a boat BOTTOM is found
         """
         
-        if row - 4 >= 0:
-            index = row - 4
-        else:
-            index = 0
-        # should be seperate function
         add_row = row - 1
         found_pieces = False
-        while add_row >= index:
-            if self.board.matrix[add_row][col] == UNDONE_BOAT:
+                
+        while self.board.matrix[add_row][col] not in (WATER, EMPTY_SPACE):
+            if self.board.matrix[add_row][col] in (UNDONE_BOAT, MIDDLE):
                 found_pieces = True
                 
-            elif self.board.matrix[add_row][col] == TOP or index == 0:
-                if add_row == index:
-                    # quer dizer que sao 2 barcos, preencher so um deles e
-                    # deixar o algoritmo fazer o resto
-                    self.board.matrix[row - 1][col] = TOP
-                    self.board.matrix[row - 2][col] = WATER
-                    
-                    # remover barco preenchido
-                    self.remove_done_boat(2)
-                    break
-
-                if index == 0:
-                    self.board.matrix[index][col] = TOP
+            elif self.board.matrix[add_row][col] == TOP:
+                # barco acabou
                 
-                # remover barco preenchido
-                size_of_boat = row - add_row
-                self.remove_done_boat(size_of_boat)
+                found_pieces = True
                 
-                add_row += 1
+                add_row -= 1
                 
-                while add_row < row:
-                    self.board.matrix[add_row][col] = MIDDLE
-                    add_row += 1
                 break
             
-            elif self.board.matrix[add_row][col] == WATER:
-                if found_pieces and add_row > index:
-                    add_row += 1
-                    self.board.matrix[add_row][col] = TOP
-                    add_row += 1
-                    while add_row < row:
-                        self.board.matrix[add_row][col] = MIDDLE
-                        add_row += 1
-                break
+            if add_row == 0:
+                # chegamos ao final da linha, o barco acabou
                 
+                add_row -= 1
+                
+                break
+            
             add_row -= 1
+
+        if found_pieces:
+            add_row += 1
+            self.board.matrix[add_row][col] = TOP
+            # remover barco preenchido
+            size_of_boat = add_row - row + 1
+            self.remove_done_boat(size_of_boat)
+            
+            add_row += 1
+            while add_row > row:
+                self.board.matrix[add_row][col] = MIDDLE
+                add_row += 1
 
     
     def treat_undone_boat(self, row, col):
@@ -752,8 +713,12 @@ class BimaruState:
         if all(value in (WATER, None) for value in horizontal_adjacent):
             # possibility of a vertical boat
             if all(value in (WATER, None) for value in vertical_adjacent):
+                
                 # it's a circle
+                
                 self.board.matrix[row][col] = CIRCLE
+                
+                # IMPORTANT: verificar se é preciso preencher o barco a volta com agua
                 
                 # remover barco preenchido
                 self.remove_done_boat(1)
@@ -761,77 +726,91 @@ class BimaruState:
                 # vertical boat
                 
                 # pela definição do loop, o resto do barco tem de estar abaixo
+
+                # ver se o barco esta delimitado por água
+
+                add_row = row + 1
+                found_pieces = False
                 
-                # check if the boat is complete
-                
-                if vertical_adjacent[0] == TOP:
-                    # then this must be a middle piece
-                    self.board.matrix[row][col] = MIDDLE
-
-                
-                # ver como completar o resto do barco
-                    
-                else:
-
-                    # ver se o barco esta delimitado por água
-
-                    add_col = col + 1
-                    found_pieces = False
-                    while self.board.matrix[row][add_col] not in (WATER, EMPTY_SPACE):
-                        if self.board.matrix[row][add_col] == UNDONE_BOAT or self.board.matrix[row][add_col] == MIDDLE:
-                            found_pieces = True
-                        elif self.board.matrix[row][add_col] == RIGHT:
-                            # meter isto legivel
-                            
-                            # remover barco preenchido
-                            size_of_boat = add_col - col + 1
-                            self.remove_done_boat(size_of_boat)
-
-                            if index == 9:
-                                self.board.matrix[row][index] = RIGHT
-                            
-                            add_col -= 1
-                            while add_col > col:
-                                self.board.matrix[row][add_col] = MIDDLE
-                                add_col -= 1
-                            break
+                while self.board.matrix[add_row][col] not in (WATER, EMPTY_SPACE):
+                    if self.board.matrix[add_row][col] in (UNDONE_BOAT, MIDDLE):
+                        found_pieces = True
                         
-                        add_col += 1
-
-                        if found_pieces and add_col < index:
-                            add_col -= 1
-                            self.board.matrix[row][add_col] = RIGHT
-                            # remover barco preenchido
-                            size_of_boat = index - add_col
-                            self.remove_done_boat(size_of_boat)
-                            
-                            add_col -= 1
-                            while add_col > col:
-                                self.board.matrix[row][add_col] = MIDDLE
-                                add_col -= 1
+                    elif self.board.matrix[add_row][col] == BOTTOM:
+                        # barco acabou
+                        
+                        found_pieces = True
+                        
                         break
-                    self.board.matrix[row][col] = TOP
                     
-                    self.treat_top(row, col)
-                
+                    if add_row == 9:
+                        # chegamos ao final da linha, o barco acabou
+                        
+                        add_row += 1
+                        
+                        break
+                    
+                    add_row += 1
+
+                if found_pieces:
+                    add_row -= 1
+                    self.board.matrix[add_row][col] = BOTTOM
+                    # remover barco preenchido
+                    size_of_boat = add_row - row + 1
+                    self.remove_done_boat(size_of_boat)
+                    
+                    add_row -= 1
+                    while add_row > row:
+                        self.board.matrix[add_row][col] = MIDDLE
+                        add_row -= 1
+            
+                self.board.matrix[row][col] = TOP
+            
             
         else:
             # horizontal boat
             
             # pela definição do loop, o resto do barco tem de estar à direita
             
-            # check if the boat is complete
+            # verificar se o barco esta delimitado por água
             
-            if horizontal_adjacent[0] == LEFT:
-                # then this must be a middle piece
-                self.board.matrix[row][col] = MIDDLE
+            add_col = col + 1
+            found_pieces = False
+            
+            while self.board.matrix[row][add_col] not in (WATER, EMPTY_SPACE):
+                if self.board.matrix[row][add_col] in (UNDONE_BOAT, MIDDLE):
+                    found_pieces = True
+                    
+                elif self.board.matrix[row][add_col] == RIGHT:
+                    # barco acabou
+                    
+                    found_pieces = True
+                    
+                    break
+                
+                if add_col == 9:
+                    # chegamos ao final da linha, o barco acabou
+                    
+                    add_col += 1
+                    
+                    break
+                
+                add_col += 1
 
-                # ISTO TA MAL, VERIFICAR QUE O BARCO ESTA DELIMITADO POR AGUASN AT LEAST
-            
-            # ver como completar o resto do barco
-            
-            else:    
-                self.board.matrix[row][col] = LEFT
+            if found_pieces:
+                add_col -= 1
+                self.board.matrix[row][add_col] = RIGHT
+                # remover barco preenchido
+                size_of_boat = add_col - col + 1
+                print("boat of size: ", size_of_boat)
+                self.remove_done_boat(size_of_boat)
+                
+                add_col -= 1
+                while add_col > col:
+                    self.board.matrix[row][add_col] = MIDDLE
+                    add_col -= 1
+        
+            self.board.matrix[row][col] = LEFT
             
     
     def complete_boats(self):
