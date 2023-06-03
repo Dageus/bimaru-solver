@@ -887,14 +887,14 @@ class Board:
             elif self.matrix[row][col] == EMPTY_SPACE:
                 if self.rows[row] < 1:
                     return False
-                count += 1            
+                       
             else:
                 return False    
             for i in range(row + 1, row + boat_size - 1):
                 if self.matrix[i][col] == EMPTY_SPACE:
                     if self.rows[i] < 1:
                         return False
-                    count += 1
+                    
                 elif self.matrix[i][col] in (MIDDLE, UNDONE_BOAT):
                     count += 1
                 else:
@@ -904,7 +904,7 @@ class Board:
                 if self.adjacent_horizontal_values(i, col)[1]  not in (WATER, EMPTY_SPACE):
                     return False
                 
-            if self.board.matrix[row + boat_size - 1][col] in (BOTTOM, UNDONE_BOAT):
+            if self.matrix[row + boat_size - 1][col] in (BOTTOM, UNDONE_BOAT):
                 tuple_adjacent_e = self.adjacent_values(row + boat_size - 1, col)
                 for i in range(8):
                     if i != 0 and i != 4 and i != 6:
@@ -993,9 +993,9 @@ class Bimaru(Problem):
                 # if board.rows[row] <= count_empty_spaces_col[row]:
                 for col in range(10):
                     # if board.columns[col] <= count_empty_spaces_row[col]:
-                    if  state.is_valid_position( row, col, boat_size, HORIZONTAL):
+                    if  board.is_valid_position( row, col, boat_size, HORIZONTAL):
                         actions.append((row, col, boat_size, HORIZONTAL))
-                    elif state.is_valid_position( row, col, boat_size, VERTICAL):
+                    if board.is_valid_position( row, col, boat_size, VERTICAL):
                         actions.append((row, col, boat_size, VERTICAL))
                 
         elif boat_size == 1:
@@ -1003,7 +1003,7 @@ class Bimaru(Problem):
                 # if board.rows[row] <= count_empty_spaces_row[row]:  
                 for col in range(10):
                     # if board.columns[col] <= count_empty_spaces_col[col]:
-                    if state.is_valid_submarine_position(board, row, col):
+                    if board.is_valid_submarine_position(board, row, col):
                         actions.append((row, col, 1))
         print(actions)
         return actions
