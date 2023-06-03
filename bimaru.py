@@ -107,22 +107,24 @@ class Board:
     def adjacent_diagonal1_values(self, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente acima e abaixo,
         respectivamente."""
-        cell1 = self.matrix[row-1][col-1]
-        cell2 = self.matrix[row+1][col+1]
-        if self.matrix[row-1][col-1] == "." or row - 1 < 0 or col - 1 < 0:
-            cell1 = None
-        if self.matrix[row+1][col+1] == "." or row + 1 > 9 or col + 1 > 9:
-            cell2 = None
+
+        cell1 = None
+        cell2 = None
+        if row - 1 >= 0 and col - 1 >= 0 and self.matrix[row-1][col-1] != EMPTY_SPACE :
+            cell1 = self.matrix[row-1][col-1]
+        if row + 1 <= 9 and col + 1 <= 9 and self.matrix[row+1][col+1] != EMPTY_SPACE :
+            cell2 = self.matrix[row+1][col+1]
         return cell1, cell2
 
     def adjacent_diagonal2_values(self, row: int, col: int) -> tuple:
         """Devolve os valores imediatamente acima e abaixo,
         respectivamente."""
-        cell1 = self.matrix[row-1][col+1]
-        cell2 = self.matrix[row+1][col-1]
-        if self.matrix[row-1][col+1] == "." or row - 1 < 0 or col + 1 > 9:
-            cell1 = None
-        if self.matrix[row+1][col-1] == "." or row + 1 > 9 or col - 1 < 0:
+        
+        cell1 = None
+        cell2 = None
+        if  row - 1 >= 0 and col + 1 <= 9 and self.matrix[row-1][col+1] != EMPTY_SPACE:
+            cell1 = self.matrix[row-1][col+1]
+        if row + 1 <= 9 and col - 1 >=0 and self.matrix[row+1][col-1] != EMPTY_SPACE:
             cell2 = None
         return cell1, cell2
 
@@ -351,8 +353,8 @@ class Board:
     def count_boats(self):
         """Retorna o maior barco que ainda não foi colocado"""
         boats={1:4, 2:3, 3:2, 4:1}
-        for row in range(0, 10):
-            for col in range(0, 10):
+        for row in range(10):
+            for col in range(10):
                 count = 1
                 if self.matrix[row][col] == TOP:
                     for i in range(10):
@@ -818,10 +820,10 @@ class BimaruState:
         # pôr barco na horizontal
 
         if orientation == HORIZONTAL:
+            if col + boat_size - 1 > 9:
+                return False
             if self.board.matrix[row][col] in (LEFT, UNDONE_BOAT):
-                if col + boat_size - 1 > 9:
-                    return False
-                tuple_adjacent_b = self.board.matrix.adjacent_vertical_values(row, col)
+                tuple_adjacent_b = self.board.adjacent_values(row, col)
                 for i in range(8):
                     if i != 3 and i != 5 and i != 6:
                         if tuple_adjacent_b[i] not in (WATER, EMPTY_SPACE):
@@ -829,7 +831,7 @@ class BimaruState:
                 count += 1
 
             elif self.board.matrix[row][col] == EMPTY_SPACE:
-                if self.board.matrix.columns[col] < 1:
+                if self.board.columns[col] < 1:
                     return False
             
             else:
@@ -837,7 +839,7 @@ class BimaruState:
                 
             for i in range(col + 1, col + boat_size - 1):
                 if self.board.matrix[row][i] == EMPTY_SPACE:
-                    if self.board.matrix.columns[i] < 1:
+                    if self.board.columns[i] < 1:
                         return False
                 elif self.board.matrix[row][i] in (MIDDLE, UNDONE_BOAT):
                     count += 1
@@ -849,7 +851,7 @@ class BimaruState:
                     return False
                 
             if self.board.matrix[row][col + boat_size - 1] in (RIGHT, UNDONE_BOAT):
-                tuple_adjacent_e = self.board.matrix.adjacent_vertical_values(row, col + boat_size - 1)
+                tuple_adjacent_e = self.board.matrix.adjacent_values(row, col + boat_size - 1)
                 for i in range(8):
                     if i != 2 and i != 4 and i != 7:
                         if tuple_adjacent_e[i] not in (WATER, EMPTY_SPACE):
@@ -870,37 +872,37 @@ class BimaruState:
         # pôr barco na vertical
     
         elif orientation == VERTICAL:
+            if row + boat_size - 1 > 9:
+                return False
             if self.board.matrix[row][col] in (TOP, UNDONE_BOAT):
-                if row + boat_size - 1 > 9:
-                    return False
-                tuple_adjacent_b = self.board.matrix.adjacent_vertical_values(row, col)
+                tuple_adjacent_b = self.board.adjacent_values(row, col)
                 for i in range(8):
                     if i != 1 and i != 5 and i != 7:
                         if tuple_adjacent_b[i] not in (WATER, EMPTY_SPACE):
                             return False
                 count += 1
             elif self.board.matrix[row][col] == EMPTY_SPACE:
-                if self.board.matrix.rows[row] < 1:
+                if self.board.rows[row] < 1:
                     return False
                 count += 1            
             else:
                 return False    
             for i in range(row + 1, row + boat_size - 1):
                 if self.board.matrix[i][col] == EMPTY_SPACE:
-                    if self.board.matrix.rows[i] < 1:
+                    if self.board.rows[i] < 1:
                         return False
                     count += 1
                 elif self.board.matrix[i][col] in (MIDDLE, UNDONE_BOAT):
                     count += 1
                 else:
                     return False
-                if self.board.matrix.adjacent_horizontal_values(i, col)[0]  not in (WATER, EMPTY_SPACE):
+                if self.board.adjacent_horizontal_values(i, col)[0]  not in (WATER, EMPTY_SPACE):
                     return False
-                if self.board.matrix.adjacent_horizontal_values(i, col)[1]  not in (WATER, EMPTY_SPACE):
+                if self.board.adjacent_horizontal_values(i, col)[1]  not in (WATER, EMPTY_SPACE):
                     return False
                 
             if self.board.matrix[row + boat_size - 1][col] in (BOTTOM, UNDONE_BOAT):
-                tuple_adjacent_e = self.board.matrix.adjacent_vertical_values(row + boat_size - 1, col)
+                tuple_adjacent_e = self.board.matrix.adjacent_values(row + boat_size - 1, col)
                 for i in range(8):
                     if i != 0 and i != 4 and i != 6:
                         if tuple_adjacent_e[i] not in (WATER, EMPTY_SPACE):
@@ -924,7 +926,7 @@ class BimaruState:
             return False
         
         if self.board.matrix[row][col] == EMPTY_SPACE:
-            if self.board.matrix.rows[row] < 1 or self.initial.board.columns[col] < 1:
+            if self.board.matrix.rows[row] < 1 or self.board.matrix.columns[col] < 1:
                 return False
         tuple_adjacent = self.board.matrix.adjacent_values(row, col)    
         for value in tuple_adjacent:
@@ -972,13 +974,13 @@ class Bimaru(Problem):
         if boat_size > 1:
             for row in range(10):
                 # if board.rows[row] <= count_empty_spaces_col[row]:
-                if np.count_nonzero(self.initial.board[row] == EMPTY_SPACE) >= self.initial.board.rows[row]:
+                if np.count_nonzero(board.matrix[row] == EMPTY_SPACE) >= board.rows[row]:
                     for col in range(10):
                         # if board.columns[col] <= count_empty_spaces_row[col]:
-                        if np.count_nonzero(self.initial.board[:,col] == EMPTY_SPACE) >= self.initial.board.columns[col]:
-                            if  self.is_valid_position(board, row, col, boat_size, HORIZONTAL):
+                        if np.count_nonzero(board.matrix[:,col] == EMPTY_SPACE) >= board.columns[col]:
+                            if  state.is_valid_position( row, col, boat_size, HORIZONTAL):
                                 actions.append((row, col, boat_size, HORIZONTAL))
-                            elif self.is_valid_position(board, row, col, boat_size, VERTICAL):
+                            elif state.is_valid_position( row, col, boat_size, VERTICAL):
                                 actions.append((row, col, boat_size, VERTICAL))
                         else:   
                             return []
@@ -987,11 +989,11 @@ class Bimaru(Problem):
         elif boat_size == 1:
             for row in range(10):
                 # if board.rows[row] <= count_empty_spaces_row[row]:  
-                if np.count_nonzero(self.initial.board[row] == EMPTY_SPACE) >= self.initial.board.rows[row]:
+                if np.count_nonzero(board.matrix[row] == EMPTY_SPACE) >= board.rows[row]:
                     for col in range(10):
                         # if board.columns[col] <= count_empty_spaces_col[col]:
-                        if np.count_nonzero(self.initial.board[:,col] == EMPTY_SPACE) >= self.initial.board.columns[col]:
-                            if self.is_valid_submarine_position(board, row, col):
+                        if np.count_nonzero(board.matrix[:,col] == EMPTY_SPACE) >= board.columns[col]:
+                            if state.is_valid_submarine_position(board, row, col):
                                 actions.append((row, col, 1))   
                         else:
                             return []
@@ -1007,38 +1009,40 @@ class Bimaru(Problem):
         das presentes na lista obtida pela execução de
         self.actions(state)."""
         
+        board = state.board
+
         # action = (row, col, boat_size, orientation)
         
         if action[2] == 1:
-            self.initial.board.matrix[action[0]][action[1]] = CIRCLE
-            self.initial.board.rows[action[0]] -= 1
-            self.initial.board.columns[action[1]] -= 1
+            board.matrix[action[0]][action[1]] = CIRCLE
+            board.rows[action[0]] -= 1
+            board.columns[action[1]] -= 1
             for row in range(action[0] - 1, action[0] + 2):
                 for col in range(action[1] - 1, action[1] + 2):
                     if row >= 0 and row < 10 and col >= 0 and col < 10 and row != action[0] and col != action[1]:
-                        if self.initial.board.matrix[row][col] == EMPTY_SPACE:
-                            self.initial.board.matrix[row][col] = WATER
+                        if board.matrix[row][col] == EMPTY_SPACE:
+                            board.matrix[row][col] = WATER
         elif action[3] == HORIZONTAL:
-            self.initial.board.matrix[action[0]][action[1]] = LEFT
+            board.matrix[action[0]][action[1]] = LEFT
             for col in range(action[1], action[1] + action[2] - 1):
-                self.initial.board.matrix[action[0]][col] = MIDDLE
-            self.initial.board.matrix[action[0]][action[1] + action[2] - 1] = RIGHT
+                board.matrix[action[0]][col] = MIDDLE
+            board.matrix[action[0]][action[1] + action[2] - 1] = RIGHT
             for row in range(action[0] - 1, action[0] + 2):
                 for col in range(action[1] - 1, action[1] + action[2] + 1):
                     if row >= 0 and row < 10 and col >= 0 and col < 10 and not ( row == action[0] and action[1] <= col <= action[1] + action[2] - 1):
-                        if self.initial.board.matrix[row][col] == EMPTY_SPACE:
-                            self.initial.board.matrix[row][col] = WATER
+                        if board.matrix[row][col] == EMPTY_SPACE:
+                            board.matrix[row][col] = WATER
         
         elif action[3] == VERTICAL:
-            self.initial.board.matrix[action[0]][action[1]] = TOP
+            board.matrix[action[0]][action[1]] = TOP
             for row in range(action[0], action[0] + action[2] - 1):
-                self.initial.board.matrix[row][action[1]] = MIDDLE
-            self.initial.board.matrix[action[0] + action[2] - 1][action[1]] = BOTTOM
+                board.matrix[row][action[1]] = MIDDLE
+            board.matrix[action[0] + action[2] - 1][action[1]] = BOTTOM
             for row in range(action[0] - 1, action[0] + action[2] + 1):
                 for col in range(action[1] - 1, action[1] + 2):
                     if row >= 0 and row < 10 and col >= 0 and col < 10 and not ( action[0] <= row <= action[0] + action[2] - 1 and col == action[1]):
-                        if self.initial.board.matrix[row][col] == EMPTY_SPACE:
-                            self.initial.board.matrix[row][col] = WATER
+                        if board.matrix[row][col] == EMPTY_SPACE:
+                            board.matrix[row][col] = WATER
         return BimaruState(state.board) 
 
     def goal_test(self, state: BimaruState):
@@ -1081,9 +1085,10 @@ if __name__ == "__main__":
     
     goal_node = depth_first_tree_search(problem)
     
-    print("Is goal? ", problem.goal_test(goal_node.state))
     print("Solution:")
-    if goal_node is None:
+    if goal_node is not None:
+        print("Is goal? ", problem.goal_test(goal_node.state))
+        print(goal_node.state.board.print())
+    else:
         print("Não encontrou solução")
-    print(goal_node.state.board.print())
     
