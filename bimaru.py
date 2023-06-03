@@ -920,13 +920,13 @@ class BimaruState:
     def is_valid_submarine_position(self, row, col):
         """Verifica se colocar um submarino na posição dada é válido"""
 
-        if self.inital.board[row][col] != EMPTY_SPACE:
+        if self.board.matrix[row][col] != EMPTY_SPACE:
             return False
         
-        if self.inital.board[row][col] == EMPTY_SPACE:
-            if self.initial.board.rows[row] < 1 or self.initial.board.columns[col] < 1:
+        if self.board.matrix[row][col] == EMPTY_SPACE:
+            if self.board.matrix.rows[row] < 1 or self.initial.board.columns[col] < 1:
                 return False
-        tuple_adjacent = self.initial.board.adjacent_values(row, col)    
+        tuple_adjacent = self.board.matrix.adjacent_values(row, col)    
         for value in tuple_adjacent:
             if value not in (WATER, EMPTY_SPACE):
                 return False
