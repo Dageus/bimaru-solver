@@ -61,6 +61,7 @@ class Board:
         self.unaltered_columns = unaltered_columns
         self.hints = hints
         self.pieces = PIECES
+        print(self.print())
         self.post_parse()
 
     def get_value(self, row: int, col: int) -> str:
@@ -271,7 +272,11 @@ class Board:
                     
             if hint[2] == CIRCLE:
                 
+                # remove from pieces
                 
+                self.pieces[0] -= 1
+                
+                print(self.pieces)
                 
                 if row - 1 >= 0:
                     self.matrix[row-1][col] = WATER
@@ -569,50 +574,6 @@ class BimaruState:
             while add_col > col:
                 self.board.matrix[row][add_col] = MIDDLE
                 add_col -= 1
-
-    def treat_right(self, row, col):
-        """
-        Handles the case where a boat RIGHT is found
-        """
-        
-        add_col = col - 1
-        found_pieces = False
-        
-        while self.board.matrix[row][add_col] not in (WATER, EMPTY_SPACE):
-            if self.board.matrix[row][add_col] in (UNDONE_BOAT, MIDDLE):
-                found_pieces = True
-                
-            elif self.board.matrix[row][add_col] == LEFT:
-                # barco acabou
-                
-                add_col -= 1
-                
-                found_pieces = True
-                
-                break
-            
-            if add_col == 0:
-                # chegamos ao final da linha, o barco acabou
-                
-                add_col -= 1
-                
-                break
-            
-            add_col -= 1
-
-        if found_pieces:
-            add_col += 1
-            self.board.matrix[row][add_col] = LEFT
-            print("[", row, "][", add_col, "] = ", LEFT)
-            # remover barco preenchido
-            size_of_boat = add_col - col + 1
-            print("boat of size: ", size_of_boat)
-            self.remove_done_boat(size_of_boat)
-            
-            add_col += 1
-            while add_col > col:
-                self.board.matrix[row][add_col] = MIDDLE
-                add_col += 1
         
     
     def treat_top(self, row, col):
@@ -647,59 +608,21 @@ class BimaruState:
 
         if found_pieces:
             add_row -= 1
+            print("add_row: ", add_row)
+            print("row: ", row)
             self.board.matrix[add_row][col] = BOTTOM
             # remover barco preenchido
             size_of_boat = add_row - row + 1
+            print("boat of size: ", size_of_boat)
+            print("--------------------")
             self.remove_done_boat(size_of_boat)
             
             add_row -= 1
             while add_row > row:
                 self.board.matrix[add_row][col] = MIDDLE
                 add_row -= 1
+                
         
-    def treat_bottom(self, row, col):
-        """
-        Handles the case where a boat BOTTOM is found
-        """
-        
-        add_row = row - 1
-        found_pieces = False
-                
-        while self.board.matrix[add_row][col] not in (WATER, EMPTY_SPACE):
-            if self.board.matrix[add_row][col] in (UNDONE_BOAT, MIDDLE):
-                found_pieces = True
-                
-            elif self.board.matrix[add_row][col] == TOP:
-                # barco acabou
-                
-                found_pieces = True
-                
-                add_row -= 1
-                
-                break
-            
-            if add_row == 0:
-                # chegamos ao final da linha, o barco acabou
-                
-                add_row -= 1
-                
-                break
-            
-            add_row -= 1
-
-        if found_pieces:
-            add_row += 1
-            self.board.matrix[add_row][col] = TOP
-            # remover barco preenchido
-            size_of_boat = add_row - row + 1
-            self.remove_done_boat(size_of_boat)
-            
-            add_row += 1
-            while add_row > row:
-                self.board.matrix[add_row][col] = MIDDLE
-                add_row += 1
-
-    
     def treat_undone_boat(self, row, col):
         """
         Handles the case where a boat is found but it's not complete
@@ -741,6 +664,8 @@ class BimaruState:
                         
                         found_pieces = True
                         
+                        add_row += 1
+                        
                         break
                     
                     if add_row == 9:
@@ -754,9 +679,13 @@ class BimaruState:
 
                 if found_pieces:
                     add_row -= 1
+                    print("add_row: ", add_row)
+                    print("row: ", row)
                     self.board.matrix[add_row][col] = BOTTOM
                     # remover barco preenchido
                     size_of_boat = add_row - row + 1
+                    print("boat of size: ", size_of_boat)
+                    print("--------------------")
                     self.remove_done_boat(size_of_boat)
                     
                     add_row -= 1
@@ -799,10 +728,13 @@ class BimaruState:
 
             if found_pieces:
                 add_col -= 1
+                print("add_col: ", add_col)
+                print("col: ", col)
                 self.board.matrix[row][add_col] = RIGHT
                 # remover barco preenchido
                 size_of_boat = add_col - col + 1
                 print("boat of size: ", size_of_boat)
+                print("------------------")
                 self.remove_done_boat(size_of_boat)
                 
                 add_col -= 1
@@ -820,19 +752,13 @@ class BimaruState:
         
         for row in range(10):
             for col in range(10):
-                if self.board.matrix[row][col] != WATER and self.board.matrix[row][col] != EMPTY_SPACE:
+                if self.board.matrix[row][col] not in (WATER, EMPTY_SPACE):
                     position = self.board.matrix[row][col]
                     if position == LEFT:
                         self.treat_left(row, col)
-                            
-                    elif position == RIGHT:
-                        self.treat_right(row, col)
                         
                     elif position == TOP:
                         self.treat_top(row, col)
-                        
-                    elif position == BOTTOM:
-                        self.treat_bottom(row, col)
                         
                     elif position == UNDONE_BOAT:
                         self.treat_undone_boat(row, col)
@@ -848,9 +774,11 @@ class Bimaru(Problem):
         self.board = board
 
     def is_valid_position(self, row, col, boat_size, orientation):
-        """Verifica se colocar uma parte de barco na horizontal na posição dada é válido"""
+        """Verifica se a posição é válida para colocar um barco de tamanho boat_size com uma dada orientação"""
         count = 0
          
+        # pôr barco na horizontal
+
         if orientation == HORIZONTAL:
             if self.board[row][col] in (LEFT, UNDONE_BOAT):
                 tuple_adjacent_b = self.board.adjacent_vertical_values(row, col)
@@ -896,7 +824,10 @@ class Bimaru(Problem):
             if self.board.rows[row] < boat_size - count:
                 return False
             
-    # # (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
+            
+    # (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
+    
+        # pôr barco na vertical
     
         elif orientation == VERTICAL:
             if self.board[row][col] in (TOP, UNDONE_BOAT):
@@ -1056,6 +987,9 @@ class Bimaru(Problem):
         
         if not np.any(state.board.rows) or not np.any(state.board.columns):
             state.complete_boats()
+            print(state.board.pieces)
+            if np.any(state.board.pieces):
+                return False
             for hint in state.board.hints:
                 state.board.matrix[hint[0]][hint[1]] = hint[2].upper()
             return True
