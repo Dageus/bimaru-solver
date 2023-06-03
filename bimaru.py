@@ -422,7 +422,18 @@ class BimaruState:
                 if size == 10 - self.board.unaltered_rows[i]:
                     print("linha {}".format(i))
                     for k in range(10):
-                        if self.board.matrix[i][k] == EMPTY_SPACE:
+                        
+                        if self.board.matrix[i][k] == UNDONE_BOAT:
+                            
+                            if any(value in (LEFT, RIGHT, UNDONE_BOAT) for value in self.board.adjacent_horizontal_values(i, k))\
+                                and any(value == WATER for value in self.board.adjacent_vertical_values(i, k)):
+                            
+                                if i - 1 >= 0:
+                                    self.board.matrix[i - 1][k] = WATER
+                                if i + 1 <= 9:
+                                    self.board.matrix[i + 1][k] = WATER
+                                    
+                        elif self.board.matrix[i][k] == EMPTY_SPACE:
                             self.board.matrix[i][k] = UNDONE_BOAT
                             
                             # meter água à volta do barco
@@ -446,7 +457,18 @@ class BimaruState:
                 if size == 10 - self.board.unaltered_columns[i]:
                     print("coluna {}".format(i))
                     for k in range(10):
-                        if self.board.matrix[k][i] == EMPTY_SPACE:
+                        
+                        if self.board.matrix[k][i] == UNDONE_BOAT:
+                            
+                            if any(value in (TOP, BOTTOM, UNDONE_BOAT) for value in self.board.adjacent_vertical_values(i, k))\
+                                and any(value == WATER for value in self.board.adjacent_horizontal_values(i, k)):
+                            
+                                if i - 1 >= 0:
+                                    self.board.matrix[k][i - 1] = WATER
+                                if i + 1 <= 9:
+                                    self.board.matrix[k][i + 1] = WATER
+                        
+                        elif self.board.matrix[k][i] == EMPTY_SPACE:
                             self.board.matrix[k][i] = UNDONE_BOAT
                             
                             # meter água à volta do barco
