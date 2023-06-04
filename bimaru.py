@@ -1018,6 +1018,8 @@ class Bimaru(Problem):
         
         # formato da ação: (cell_1, cell_2, boat_size, orientação)
         
+        print("\033[1m actions \033[0m")
+        
         for i in range(3,-1,-1):
             if state.board.pieces[i] != 0:
                 boat_size = i + 1
@@ -1051,7 +1053,11 @@ class Bimaru(Problem):
                     # if board.columns[col] <= count_empty_spaces_col[col]:
                     if board.is_valid_submarine_position(row, col):
                         actions.append((row, col, 1))
+                        
+                        
         print(actions)
+        print("------------------")
+        
         return actions
 
     def result(self, state: BimaruState, action):
@@ -1059,6 +1065,8 @@ class Bimaru(Problem):
         'state' passado como argumento. A ação a executar deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state)."""
+        
+        print("\033[1m result \033[0m")
         
         board = state.board
 
@@ -1121,8 +1129,10 @@ class Bimaru(Problem):
                             board.matrix[row][col] = WATER
             board.pieces[action[2] - 1] -= 1
             
-            print("ollllla")
-            print(board.print())                            
+        print("ollllla")
+        print(board.print())           
+        print("--------------------")
+                         
         return BimaruState(board) 
 
     def goal_test(self, state: BimaruState):
@@ -1130,8 +1140,8 @@ class Bimaru(Problem):
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas de acordo com as regras do problema."""
         
+        print("\033[1m goal_test \033[0m")
         
-        """not np.any(state.board.pieces) or """
         print(state.board.pieces)
         if not np.any(state.board.rows) or not np.any(state.board.columns):
             print(state.board.pieces)
