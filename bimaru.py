@@ -64,14 +64,8 @@ class Board:
         self.pieces = PIECES
         self.valid = True
         self.post_parse()
-        self.print()
-        print("↑ apos post_parse")
         self.check_up()
-        self.print()
-        print("↑ apos check_up")
         self.complete_boats()
-        self.print()
-        print("↑ apos complete_boats")
 
     def get_value(self, row: int, col: int) -> str:
         """Devolve o valor na respetiva posição do tabuleiro."""
@@ -151,13 +145,13 @@ class Board:
         
         for row in range(10):
             for col in range(10):
-                print(self.matrix[row][col] + " ", end="")
-            print(str(self.rows[row]), end="")
+                print(self.matrix[row][col], end="")
+            # print(str(self.rows[row]), end="")
             print()
             
-        for col in range(10):
-            print(str(self.columns[col]), end=" ")
-        print()
+        # for col in range(10):
+        #     print(str(self.columns[col]), end=" ")
+        # print()
     
     def print(self):
         """Imprime o tabuleiro."""
@@ -694,7 +688,7 @@ class Board:
                     if self.matrix[row + 1][col] == EMPTY_SPACE:
                         return
                 if row - 1 >= 0:    
-                    if self.matrix[row - 1][col] == EMPTY_SPACE:
+                    if self.matrix[row - 1][col] in (UNDONE_BOAT, EMPTY_SPACE):
                         return
 
                 add_row = row + 1
@@ -761,7 +755,7 @@ class Board:
             
             if self.matrix[row][col + 1] == EMPTY_SPACE:
                 return
-            elif self.matrix[row][col - 1] == UNDONE_BOAT:
+            elif self.matrix[row][col - 1] in (UNDONE_BOAT, EMPTY_SPACE):
                 return
             
             add_col = col + 1
@@ -1056,8 +1050,7 @@ class Bimaru(Problem):
         'state' passado como argumento. A ação a executar deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state)."""
-        
-        print(action)
+    
         board = copy.deepcopy(state.board)
 
         # action = (row, col, boat_size, orientation)
@@ -1119,8 +1112,6 @@ class Bimaru(Problem):
                             board.matrix[row][col] = WATER
             board.pieces[action[2] - 1] -= 1
             
-        print("hello?")
-        board.print()
         board.check_up()
                          
         return BimaruState(board) 
