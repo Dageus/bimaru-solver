@@ -65,6 +65,12 @@ class Board:
         print(self.print())
         self.post_parse()
         self.check_up()
+        
+        print("pieces antes:", self.pieces)
+            
+        self.complete_boats()
+        
+        print("pieces depois", self.pieces)
 
     def get_value(self, row: int, col: int) -> str:
         """Devolve o valor na respetiva posição do tabuleiro."""
@@ -533,13 +539,6 @@ class Board:
             
             print("--------------------")
 
-        print("pieces antes:", self.pieces)
-            
-        self.complete_boats()
-        
-        print("pieces depois", self.pieces)
-        
-        print(self.print())
                     
     
                     
@@ -992,6 +991,7 @@ class BimaruState:
         self.board = board
         self.id = BimaruState.state_id
         BimaruState.state_id += 1
+        self.board.check_up()
 
     
     def __lt__(self, other):
@@ -1160,8 +1160,6 @@ if __name__ == "__main__":
     print(board.pieces)
     # Criar uma instância de Bimaru:
     problem = Bimaru(board)
-    # Criar um estado com a configuração inicial:
-    initial_state = BimaruState(board)
     
     goal_node = depth_first_tree_search(problem)
     
