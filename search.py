@@ -100,8 +100,6 @@ class Node:
         """[Figure 3.10]"""
         next_state = problem.result(self.state, action)
         next_node = Node(next_state, self, action, problem.path_cost(self.path_cost, self.state, action, next_state))
-        print("parent: {}\n".format(id(self.state.board)), self.state.board.print(), sep="")
-        print("child: {}\n".format(id(next_state.board)), next_state.board.print(), sep="")
         return next_node
 
     def solution(self):

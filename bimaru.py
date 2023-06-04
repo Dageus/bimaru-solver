@@ -62,16 +62,10 @@ class Board:
         self.unaltered_columns = unaltered_columns
         self.hints = hints
         self.pieces = PIECES
-        
-        print(self.print())
         self.post_parse()
         self.check_up()
-        
-        print("pieces antes:", self.pieces)
             
         self.complete_boats()
-        
-        print("pieces depois", self.pieces)
 
     def get_value(self, row: int, col: int) -> str:
         """Devolve o valor na respetiva posição do tabuleiro."""
@@ -123,8 +117,6 @@ class Board:
             cell1 = self.matrix[row-1][col-1]
         if row + 1 <= 9 and col + 1 <= 9 :
             cell2 = self.matrix[row+1][col+1]
-            if row == 4 and col == 1:
-                print(cell2)
         return cell1, cell2
 
     def adjacent_diagonal2_values(self, row: int, col: int) -> tuple:
@@ -365,10 +357,6 @@ class Board:
         """Preenche os valores adjacentes às peças com água."""
         # preenchimento de agua apos a colocacao de barcos e de mais barcos
           
-        print("\033[1m check up \033[0m")
-        
-        print(self.print())
-          
         stop = False
         
         while not stop:
@@ -397,21 +385,9 @@ class Board:
                 non_zeros = np.nonzero((self.matrix[i] == EMPTY_SPACE))
                 size = non_zeros[0].size
                 if size == self.rows[i]:
-                    print("linha {}".format(i))
                     for k in range(10):
-                        
-                        if self.matrix[i][k] == UNDONE_BOAT:
-                            
-                            continue
-                            
-                            if any(value in (LEFT, RIGHT, UNDONE_BOAT) for value in self.adjacent_horizontal_values(i, k))\
-                                and any(value == WATER for value in self.adjacent_vertical_values(i, k)):
-                                if i - 1 >= 0:
-                                    self.matrix[i - 1][k] = WATER
-                                if i + 1 <= 9:
-                                    self.matrix[i + 1][k] = WATER
                                     
-                        elif self.matrix[i][k] == EMPTY_SPACE:
+                        if self.matrix[i][k] == EMPTY_SPACE:
                             self.matrix[i][k] = UNDONE_BOAT
 
                             if k - 1 >= 0 and i - 1 >= 0: 
@@ -432,14 +408,9 @@ class Board:
                 non_zeros = np.nonzero((self.matrix[:,i] == EMPTY_SPACE))
                 size = non_zeros[0].size
                 if size == self.columns[i]:
-                    print("coluna {}".format(i))
                     for k in range(10):
                         
-                        if self.matrix[k][i] == UNDONE_BOAT:
-                            
-                            continue
-                        
-                        elif self.matrix[k][i] == EMPTY_SPACE:
+                        if self.matrix[k][i] == EMPTY_SPACE:
                             self.matrix[k][i] = UNDONE_BOAT
 
                             if k - 1 >= 0 and i - 1 >= 0: 
@@ -480,8 +451,6 @@ class Board:
                     adjacent_values_horizontal  = self.adjacent_horizontal_values(i, middle_index)
                     if all(value == WATER for value in adjacent_values_vertical)\
                         and all(value not in (UNDONE_BOAT, LEFT, RIGHT, MIDDLE) for value in adjacent_values_horizontal):
-                        print("horizontalmente em [{}][{}]".format(i, middle_index))
-                        print(adjacent_values_horizontal)
                         # preencher em cada lado com uma peça de um barco
                         self.matrix[i][middle_index - 1] = UNDONE_BOAT
                         self.matrix[i][middle_index + 1] = UNDONE_BOAT
@@ -514,11 +483,6 @@ class Board:
                     if all(value == WATER for value in adjacent_values_horizontal)\
                         and all(value not in (UNDONE_BOAT, TOP, BOTTOM, MIDDLE) for value in adjacent_values_vertical):
                         # preencher em cima e em baixo com a peça de um barco
-                        print("verticalmente em [{}][{}]".format(i, middle_index))
-                        
-                        if i - 1 < 0 or i + 1 > 9:
-                            print("this", i, middle_index)
-                            print("id: {}\n".format(id(self.matrix)), self.print())
                         
                         self.matrix[i - 1][middle_index] = UNDONE_BOAT
                         self.matrix[i + 1][middle_index] = UNDONE_BOAT
@@ -547,9 +511,6 @@ class Board:
                                         
             stop = np.array_equal(copy, self.matrix)
         
-        print(self.print())
-            
-        print("--------------------")
     
                     
     def remove_done_boat(self, size_of_boat):
@@ -587,13 +548,9 @@ class Board:
 
         if found_pieces:
             add_col -= 1
-            print("add_col: ", add_col)
-            print("col: ", col)
             self.matrix[row][add_col] = RIGHT
             # remover barco preenchido
             size_of_boat = add_col - col + 1
-            print("boat of size: ", size_of_boat)
-            print("--------------------")
             self.remove_done_boat(size_of_boat)
             
             add_col -= 1
@@ -634,13 +591,9 @@ class Board:
 
         if found_pieces:
             add_row -= 1
-            print("add_row: ", add_row)
-            print("row: ", row)
             self.matrix[add_row][col] = BOTTOM
             # remover barco preenchido
             size_of_boat = add_row - row + 1
-            print("boat of size: ", size_of_boat)
-            print("--------------------")
             self.remove_done_boat(size_of_boat)
             
             add_row -= 1
@@ -708,13 +661,9 @@ class Board:
 
                 if found_pieces:
                     add_row -= 1
-                    print("add_row: ", add_row)
-                    print("row: ", row)
                     self.matrix[add_row][col] = BOTTOM
                     # remover barco preenchido
                     size_of_boat = add_row - row + 1
-                    print("boat of size: ", size_of_boat)
-                    print("--------------------")
                     self.remove_done_boat(size_of_boat)
                     
                     add_row -= 1
@@ -761,13 +710,9 @@ class Board:
 
             if found_pieces:
                 add_col -= 1
-                print("add_col: ", add_col)
-                print("col: ", col)
                 self.matrix[row][add_col] = RIGHT
                 # remover barco preenchido
                 size_of_boat = add_col - col + 1
-                print("boat of size: ", size_of_boat)
-                print("------------------")
                 self.remove_done_boat(size_of_boat)
                 
                 add_col -= 1
@@ -899,14 +844,10 @@ class Board:
                 for i in range(8):
                     if i != 1 and i != 5 and i != 7:
                         if tuple_adjacent_b[i] not in (WATER, EMPTY_SPACE, None):
-                            print("first adj fdd", i)
                             return False
                 count += 1
             elif self.matrix[row][col] == EMPTY_SPACE:
-                if row == 2 and col == 1:
-                    print('ola', boat_size)
                 if self.rows[row] < 1:
-                    print("rows < 1", row)
                     return False
                        
             else:
@@ -914,7 +855,6 @@ class Board:
             for i in range(row + 1, row + boat_size - 1):
                 if self.matrix[i][col] == EMPTY_SPACE:
                     if self.rows[i] < 1:
-                        print("rows < 1", i)
                         return False
                     
                 elif self.matrix[i][col] in (MIDDLE, UNDONE_BOAT):
@@ -922,34 +862,23 @@ class Board:
                 else:
                     return False
                 if self.adjacent_horizontal_values(i, col)[0]  not in (WATER, EMPTY_SPACE, None):
-                    print("esquerda not agua")
                     return False
                 if self.adjacent_horizontal_values(i, col)[1]  not in (WATER, EMPTY_SPACE, None):
-                    print("direita")
                     return False
                 
             if self.matrix[row + boat_size - 1][col] in (BOTTOM, UNDONE_BOAT):
                 tuple_adjacent_e = self.adjacent_values(row + boat_size - 1, col)
-                if(row == 2 and col == 1):
-                    print(row+ boat_size - 1)
-    
-                    print(self.matrix[row + boat_size - 1 +1][col +1])
                 for i in range(8):
                     if i != 0 and i != 4 and i != 6:
                         if tuple_adjacent_e[i] not in (WATER, EMPTY_SPACE, None):
-                            print(tuple_adjacent_e)
-                            print("adj fdd", i)
                             return False
                 count += 1
             elif self.matrix[row + boat_size - 1][col] == EMPTY_SPACE:
                 if self.rows[row + boat_size - 1] < 1:
-                    print("row < 1", row + boat_size - 1)
                     return False
             else:
                 return False
             if self.columns[col] < boat_size - count:
-                print(col)
-                print("col full", self.columns[col])
                 return False
             
             for ro in range(row, row + boat_size):
@@ -1025,8 +954,6 @@ class Bimaru(Problem):
         
         # formato da ação: (cell_1, cell_2, boat_size, orientação)
         
-        print("\033[1m actions \033[0m")
-        
         for i in range(3,-1,-1):
             if state.board.pieces[i] != 0:
                 boat_size = i + 1
@@ -1062,9 +989,6 @@ class Bimaru(Problem):
                     if board.is_valid_submarine_position(row, col):
                         actions.append((row, col, 1))
                         
-                        
-        print(actions)
-        print("------------------")
         
         return actions
 
@@ -1073,9 +997,6 @@ class Bimaru(Problem):
         'state' passado como argumento. A ação a executar deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state)."""
-        
-        print("\033[1m result \033[0m")
-        print("boat:", action[0], action[1], "size: ", action[2])
         
         board = copy.deepcopy(state.board)
 
@@ -1138,9 +1059,6 @@ class Bimaru(Problem):
                             board.matrix[row][col] = WATER
             board.pieces[action[2] - 1] -= 1
             
-        print("ollllla")
-        print("id: {}\n".format(id(board)), board.print())           
-        print("--------------------")
         board.check_up()
                          
         return BimaruState(board) 
@@ -1150,11 +1068,7 @@ class Bimaru(Problem):
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas de acordo com as regras do problema."""
         
-        print("\033[1m goal_test \033[0m")
-        
-        print(state.board.pieces)
         if not np.any(state.board.rows) or not np.any(state.board.columns):
-            print(state.board.pieces)
             if np.any(state.board.pieces):
                 return False
             for hint in state.board.hints:
@@ -1176,8 +1090,6 @@ if __name__ == "__main__":
     
     board = Board.parse_instance()
     
-    print(board.print())
-    print(board.pieces)
     # Criar uma instância de Bimaru:
     problem = Bimaru(board)
     
