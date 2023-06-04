@@ -149,12 +149,9 @@ class Board:
         
         for rows in self.matrix:
             for col in rows:
-                str_ += col + " "
-            str_ += str(self.rows[i]) + "\n"
+                str_ += col + ""
+            str_ += "\n"
             i+=1
-        
-        for elem in self.columns:
-            str_ += str(elem) + " "
         str_ += "\n"
         return str_
     
@@ -1095,12 +1092,10 @@ if __name__ == "__main__":
     
     goal_node = depth_first_tree_search(problem)
     
-    print("Solution:")
     if goal_node is not None:
         print("Is goal? ", problem.goal_test(goal_node.state))
+        print("Solution:")
         print(goal_node.state.board.print())
-    else:
-        print("Não encontrou solução")
     
 
 
