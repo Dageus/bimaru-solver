@@ -33,6 +33,7 @@ VERTICAL    = 1
 PIECES      = [  4 ,  3 ,  2 ,  1  ]
 
 import sys
+import copy
 from sys import stdin
 import numpy as np
 from search import (
@@ -364,11 +365,13 @@ class Board:
         """Preenche os valores adjacentes às peças com água."""
         # preenchimento de agua apos a colocacao de barcos e de mais barcos
           
+        print("\033[1m check up \033[0m")
+        
+        print(self.print())
+          
         stop = False
         
         while not stop:
-            
-            print(self.print())
             
             copy = np.copy(self.matrix)
             
@@ -476,8 +479,9 @@ class Board:
                     adjacent_values_vertical    = self.adjacent_vertical_values(i, middle_index)
                     adjacent_values_horizontal  = self.adjacent_horizontal_values(i, middle_index)
                     if all(value == WATER for value in adjacent_values_vertical)\
-                        and all(value not in (UNDONE_BOAT, LEFT, RIGHT) for value in adjacent_values_horizontal):
+                        and all(value not in (UNDONE_BOAT, LEFT, RIGHT, MIDDLE) for value in adjacent_values_horizontal):
                         print("horizontalmente em [{}][{}]".format(i, middle_index))
+                        print(adjacent_values_horizontal)
                         # preencher em cada lado com uma peça de um barco
                         self.matrix[i][middle_index - 1] = UNDONE_BOAT
                         self.matrix[i][middle_index + 1] = UNDONE_BOAT
@@ -508,8 +512,14 @@ class Board:
                     # verificar verticalmente
                             
                     if all(value == WATER for value in adjacent_values_horizontal)\
-                        and all(value not in (UNDONE_BOAT, TOP, BOTTOM) for value in adjacent_values_vertical):
+                        and all(value not in (UNDONE_BOAT, TOP, BOTTOM, MIDDLE) for value in adjacent_values_vertical):
                         # preencher em cima e em baixo com a peça de um barco
+                        print("verticalmente em [{}][{}]".format(i, middle_index))
+                        
+                        if i - 1 < 0 or i + 1 > 9:
+                            print("this", i, middle_index)
+                            print("id: {}\n".format(id(self.matrix)), self.print())
+                        
                         self.matrix[i - 1][middle_index] = UNDONE_BOAT
                         self.matrix[i + 1][middle_index] = UNDONE_BOAT
                         
@@ -536,10 +546,10 @@ class Board:
                             
                                         
             stop = np.array_equal(copy, self.matrix)
+        
+        print(self.print())
             
-            print("--------------------")
-
-                    
+        print("--------------------")
     
                     
     def remove_done_boat(self, size_of_boat):
@@ -877,7 +887,6 @@ class Board:
                 return False
                 
             
-            
     # (cima, baixo, esquerda, direita, esquedra_cima, direita_baixo, direita_cima, esquerda_baixo)
     
         # pôr barco na vertical
@@ -991,7 +1000,6 @@ class BimaruState:
         self.board = board
         self.id = BimaruState.state_id
         BimaruState.state_id += 1
-        self.board.check_up()
 
     
     def __lt__(self, other):
@@ -1002,7 +1010,6 @@ class Bimaru(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
         super().__init__(initial = BimaruState(board), goal=None)
-
 
     def actions(self, state: BimaruState):
         """Retorna uma lista de ações que podem ser executadas a
@@ -1025,7 +1032,8 @@ class Bimaru(Problem):
                 boat_size = i + 1
                 break
         
-        
+        if any(row < 0 for row in state.board.rows) or any(col < 0 for col in state.board.columns):
+            return []
 
         board = state.board
         actions = []
@@ -1067,8 +1075,9 @@ class Bimaru(Problem):
         self.actions(state)."""
         
         print("\033[1m result \033[0m")
+        print("boat:", action[0], action[1], "size: ", action[2])
         
-        board = state.board
+        board = copy.deepcopy(state.board)
 
         # action = (row, col, boat_size, orientation)
         
@@ -1130,8 +1139,9 @@ class Bimaru(Problem):
             board.pieces[action[2] - 1] -= 1
             
         print("ollllla")
-        print(board.print())           
+        print("id: {}\n".format(id(board)), board.print())           
         print("--------------------")
+        board.check_up()
                          
         return BimaruState(board) 
 
