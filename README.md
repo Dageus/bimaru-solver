@@ -29,4 +29,10 @@ and *COLUMN* shows how many items should be on each column, following the same l
  - L represents a LEFT piece
  - R represents a RIGHT piece
 
+and pass it into the algorithm
+
+### example:
+
+`$ python bimaru.py < instance_02.txt`
+
 ## The algorithm will use a DFS and a Binary Tree Structure to find the best solution
